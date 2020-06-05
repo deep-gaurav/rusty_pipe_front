@@ -13,22 +13,25 @@ const options = {
     outDir: './dist', 
     outFile: 'index.html',
     publicUrl: '/',
-    watch: true,
+    watch: buildType !=='production',
     minify: buildType === 'production',
   };
 
 (async () => {
     const bundler = new Bundler(entryFiles, options);
 
-    chokidar.watch(['./crate/src', './crate/Cargo.toml']).on('change', async (event, path) => {
-        console.log(`there are new changes in '${path}'. Start to rebuild rustwasm sources`);
+    if (buildType!=='production'){
 
-        bundler.bundle();
-
-        bundler.hmr.broadcast({
-            type: 'reload'
+        chokidar.watch(['./crate/src', './crate/Cargo.toml']).on('change', async (event, path) => {
+            console.log(`there are new changes in '${path}'. Start to rebuild rustwasm sources`);
+    
+            bundler.bundle();
+    
+            bundler.hmr.broadcast({
+                type: 'reload'
+            });
         });
-    });
+    }
 
     bundler.on('buildStart', () => {
         const prevtBuildFile = Path.join(__dirname, './wasm_pack_cmd');
@@ -36,6 +39,10 @@ const options = {
         execSync(`${prevtBuildFile} ${buildType === 'production' ? '' : '--dev'}`, {stdio: 'inherit'});
     });
 
-    await bundler.serve(process.env.SERVER_ADDRESS || 1234);
+    if(buildType!=='production'){
+        await bundler.serve(process.env.SERVER_ADDRESS || 1234);
+    }else{
+        await bundler.bundle();
+    }
 })();
 
