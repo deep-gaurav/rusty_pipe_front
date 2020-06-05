@@ -8,3 +8,5 @@ source ~/.cargo/env
 cargo install wasm-pack
 
 npm run build
+
+ls -l dist/
