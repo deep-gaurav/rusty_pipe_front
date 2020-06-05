@@ -5,7 +5,7 @@ use yew::services::FetchService;
 use super::graphql;
 use graphql_client::GraphQLQuery;
 
-pub static RUSTY_PIPE_SERVER: &str = "http://rustypipe.herokuapp.com/graphql";
+pub static RUSTY_PIPE_SERVER: &str = "https://rustypipe.herokuapp.com/graphql";
 
 pub struct App {
     fetch_service: FetchService,
