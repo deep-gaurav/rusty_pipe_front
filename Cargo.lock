@@ -625,6 +625,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "rusty_pipe_front"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "cfg-if",
+ "console_error_panic_hook",
+ "dotenv",
+ "failure",
+ "graphql_client",
+ "http",
+ "log",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-logger",
+ "web-sys",
+ "wee_alloc",
+ "yew",
+ "yew-router",
+]
+
+[[package]]
 name = "ryu"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -972,29 +995,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "yew-parcel"
-version = "0.14.2"
-dependencies = [
- "anyhow",
- "cfg-if",
- "console_error_panic_hook",
- "dotenv",
- "failure",
- "graphql_client",
- "http",
- "log",
- "serde",
- "serde_derive",
- "serde_json",
- "wasm-bindgen",
- "wasm-logger",
- "web-sys",
- "wee_alloc",
- "yew",
- "yew-router",
 ]
 
 [[package]]
