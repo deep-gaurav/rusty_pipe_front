@@ -1,8 +1,8 @@
 module.exports = (req, res) => {
     const {
-      query: { uri }
+      query: { cors }
     } = req;
-    // var reuri = atob(uri);
+    var uri = atob(cors);
   
     res.send(`Req ${uri}!`)
   }
