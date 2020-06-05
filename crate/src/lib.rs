@@ -7,13 +7,19 @@ extern crate wasm_bindgen;
 extern crate web_sys;
 extern crate yew;
 extern crate yew_router;
-extern crate yew_styles;
+extern crate serde;
+extern crate graphql_client;
+extern crate log;
+extern crate wasm_logger;
+extern crate serde_json;
+extern crate http;
+extern crate anyhow;
 
 use wasm_bindgen::prelude::*;
 
 mod app;
-mod pages;
 use app::App;
+mod graphql;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the
@@ -43,6 +49,8 @@ pub fn run() {
     // If the `console_error_panic_hook` feature is enabled this will set a panic hook, otherwise
     // it will do nothing.
     set_panic_hook();
+
+    wasm_logger::init(wasm_logger::Config::default());
 
     yew::start_app::<App>();
 }

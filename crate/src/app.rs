@@ -1,36 +1,100 @@
-use crate::pages::{About, Home};
+use yew::format::Json;
 use yew::prelude::*;
-use yew_router::{prelude::*, route::Route, switch::Permissive, Switch};
-use yew_styles::{
-    navbar::{
-        navbar_component::{Fixed, Navbar},
-        navbar_container::NavbarContainer,
-    },
-    styles::{Palette, Style},
-};
+use yew::services::FetchService;
 
-pub struct App;
+use super::graphql;
+use graphql_client::GraphQLQuery;
 
-#[derive(Switch, Debug, Clone)]
-pub enum AppRouter {
-    #[to = "/!"]
-    RootPath,
-    #[to = "/about!"]
-    AboutPath,
-    #[to = "/page-not-found"]
-    PageNotFound(Permissive<String>),
+pub static RUSTY_PIPE_SERVER: &str = "http://rustypipe.herokuapp.com/graphql";
+
+pub struct App {
+    fetch_service: FetchService,
+    link: ComponentLink<Self>,
+    suggestion_fetch_task: Option<yew::services::fetch::FetchTask>,
+    suggestions: Vec<String>,
+    show_nav_menu: bool
+}
+
+pub enum Msg {
+    Ignore,
+    QuerySearch(String),
+    ShowSearch(graphql::suggestion_query::suggestions::SuggestionsSearch),
+    ToggleNavMenu
 }
 
 impl Component for App {
-    type Message = ();
+    type Message = Msg;
     type Properties = ();
 
-    fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
-        App {}
+    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+        App {
+            fetch_service: FetchService::default(),
+            link,
+            suggestion_fetch_task: None,
+            suggestions: vec![],
+            show_nav_menu: false
+        }
     }
 
-    fn update(&mut self, _: Self::Message) -> ShouldRender {
-        false
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        match msg {
+
+            Msg::ToggleNavMenu => {
+              self.show_nav_menu = !self.show_nav_menu;
+              true
+            }
+
+            Msg::QuerySearch(change) => {
+                log::info!("Query: {}", change);
+                use graphql::suggestion_query::{
+                    suggestions::ResponseData, suggestions::Variables, Suggestions,
+                };
+                use graphql_client::Response;
+
+                let query = Suggestions::build_query(Variables { query: change });
+
+                let querys = serde_json::to_string(&query).expect("Query not json");
+                log::info!("{:#?}", querys);
+                // log::info!("{:#?}");
+                let req = http::Request::post(RUSTY_PIPE_SERVER)
+                    .header("Content-Type", "application/json")
+                    .body(Ok(querys))
+                    .expect("Cant make request");
+                let task = self
+                    .fetch_service
+                    .fetch(
+                        req,
+                        self.link
+                            .callback(|res: http::Response<Result<String, anyhow::Error>>| {
+                                let body = res.into_body();
+                                if let Ok(body) = body {
+                                    let bodyres: Response<ResponseData> =
+                                        serde_json::from_str(&body).expect("Not Resp");
+                                    // log::info!("{:#?}",bodyres);
+                                    if let Some(data) = bodyres.data {
+                                        Msg::ShowSearch(data.search)
+                                    } else {
+                                        Msg::Ignore
+                                    }
+                                } else {
+                                    Msg::Ignore
+                                }
+                            }),
+                    )
+                    .expect("Cant create fetch task");
+                self.suggestion_fetch_task = Some(task);
+
+                false
+            }
+
+
+            Msg::ShowSearch(suggestions) => {
+                self.suggestions = suggestions.suggestion;
+                true
+            }
+
+            Msg::Ignore => false,
+        }
     }
 
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
@@ -38,37 +102,72 @@ impl Component for App {
     }
 
     fn view(&self) -> Html {
+        let suggestionlist = html! {
+          for self.suggestions.iter().map(|s|
+            html!{
+              <a href="#" key=s.to_string() class="dropdown-item">
+                {s}
+              </a>
+            }
+          )
+        };
+
         html! {
-            <div>
-                <Navbar
-                    navbar_type=Palette::Info
-                    navbar_style=Style::Outline
-                    fixed=Fixed::Top
-                    branch=html!{<img src="./yew.svg"></img>}
-                >
-                    <NavbarContainer>
-                            <RouterAnchor<AppRouter> classes="navbar-item" route=AppRouter::RootPath>{"Home"}</RouterAnchor<AppRouter>>
-                            <RouterAnchor<AppRouter> classes="navbar-item" route=AppRouter::AboutPath>{"About"}</RouterAnchor<AppRouter>>
-                    </NavbarContainer>
-                </Navbar>
-                <Router<AppRouter, ()>
-                    render = Router::render(|switch: AppRouter | {
-                        match switch {
-                            AppRouter::RootPath => html!{
-                                <Home/>
-                            },
-                            AppRouter::AboutPath => html!{
-                                <About/>
-                            },
-                            AppRouter::PageNotFound(Permissive(None)) => html!{"Page not found"},
-                            AppRouter::PageNotFound(Permissive(Some(missed_route))) => html!{format!("Page '{}' not found", missed_route)}
-                        }
-                    } )
-                    redirect = Router::redirect(|route: Route<()>| {
-                        AppRouter::PageNotFound(Permissive(Some(route.route)))
-                    })
-                />
+          <>
+            <div class="navbar is-active">
+              <div class="navbar-brand">
+                <div class="navbar-item">
+                  <h2 class="title">{"RustyPipe"}</h2>
+                </div>
+
+                <a role="button" onclick=self.link.callback(|_|Msg::ToggleNavMenu) class="navbar-burger" aria-label="menu" aria-expanded="false">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                </a>
+              </div>
+              <div class={
+                let mut classes = "navbar-menu".to_string();
+                if self.show_nav_menu{
+                  classes = format!("{} is-active",classes);
+                }
+                classes
+              }>
+                <div class="navbar-end">
+                  <div class="navbar-item">
+                    <div class="dropdown is-hoverable">
+                      <div class="dropdown-trigger">
+                        <div class="field">
+                          <div class="control has-icons-left is-expanded">
+                            <input class="input" oninput=self.link.callback(
+                                |ip:yew::InputData|Msg::QuerySearch(ip.value)
+                            ) />
+                            <span class="icon is-left"><i class="fas fa-search"></i></span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                          {
+                            suggestionlist
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+            <section class="section">
+              <div class="container">
+                <h1 class="title">
+                  {
+                    format!("{:#?}",self.suggestions)
+                  }
+                </h1>
+              </div>
+            </section>
+          </>
         }
     }
 }

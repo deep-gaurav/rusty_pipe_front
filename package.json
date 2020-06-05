@@ -25,7 +25,10 @@
   },
   "dependencies": {},
   "staticFiles": {
-    "staticPath": ["./crate/pkg", "./crate/assets"],
+    "staticPath": [
+      "./crate/pkg",
+      "./crate/assets"
+    ],
     "watcherGlob": false
   }
 }
