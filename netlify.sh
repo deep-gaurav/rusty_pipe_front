@@ -2,7 +2,7 @@
 
 set -e
 
-curl https://sh.rustup.rs -sSf | sh -s - --default-toolchain nightly -y
+curl https://sh.rustup.rs -sSf | sh -s - --default-toolchain stable -y
 source ~/.cargo/env
 
 cargo install wasm-pack
