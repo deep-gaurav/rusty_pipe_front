@@ -1,12 +1,12 @@
 [package]
-authors = ["Francisco Jesus Navarro Cortes"]
+authors = ["Deep Gaurav"]
 categories = ["wasm"]
-description = "My awesome Yew with Yew-Router and Parcel application!"
+description = "RustyPipe"
 license = "MIT"
-name = "yew-parcel"
+name = "rusty_pipe_front"
 readme = "./README.md"
-repository = "https://github.com/spielrs/yew-parcel-template.git"
-version = "0.14.2"
+# repository = "https://github.com/spielrs/yew-parcel-template.git"
+# version = "0.14.2"
 
 [lib]
 crate-type = ["cdylib"]
