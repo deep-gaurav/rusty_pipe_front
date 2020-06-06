@@ -4,10 +4,12 @@ set -e
 
 shopt -s dotglob
 
-mkdir -p node_modules/rustcache
 mkdir target
 
-mv node_modules/rustcache/* target
+if [ -f node_modules/rustcache/ ]; then
+   mv node_modules/rustcache/* target
+fi
+
 
 
 curl https://sh.rustup.rs -sSf | sh -s - --default-toolchain stable -y
