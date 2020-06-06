@@ -6,6 +6,7 @@ use super::graphql;
 use graphql_client::GraphQLQuery;
 
 use crate::downloader::{send_future,DownloaderExample};
+use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 
 pub static RUSTY_PIPE_SERVER: &str = "https://rustypipe.herokuapp.com/graphql";
 
@@ -51,20 +52,10 @@ impl Component for App {
                 let ch2 = change.clone();
                 let future = async move {
                     let change = ch2.clone();
-                    let ytex = rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor::new(DownloaderExample,
-                        &change,
-                        None
-                    ).await;
+                    let ytex = YTSearchExtractor::get_search_suggestion(&change,&DownloaderExample).await;
                     match ytex{
-                        Ok(extractor)=>{
-                            let suggestions = extractor.get_search_suggestion(&DownloaderExample).await;
-                            match suggestions{
-                                Ok(suggestion)=>Msg::ShowSearch(suggestion),
-                                Err(er)=>{
-                                    log::error!("{:#?}",er);
-                                    Msg::Ignore
-                                }
-                            }
+                        Ok(suggestion)=>{
+                            Msg::ShowSearch(suggestion)
                         },
                         Err(err)=>{
                             log::error!("{:#?}",err);
