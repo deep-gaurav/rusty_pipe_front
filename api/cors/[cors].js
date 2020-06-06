@@ -22,16 +22,19 @@ const handler = (req, res) => {
     var uri = Buffer.from(cors, 'base64').toString('ascii');
 
     var header = {};
-    if(req.header("x-youtube-client-name")){
-        header["x-youtube-client-name"]=req.header("x-youtube-client-name");
+    if(req.headers["x-youtube-client-name"]){
+        header["x-youtube-client-name"]=req.headers["x-youtube-client-name"];
     }
-    if(req.header("x-youtube-client-version")){
-        header["x-youtube-client-version"]=req.header("x-youtube-client-version");
+    if(req.headers["x-youtube-client-version"]){
+        header["x-youtube-client-version"]=req.headers["x-youtube-client-version"];
     }
 
 
     const https = require('https');
-    https.get(uri, (resp) => {
+    var options = {
+        headers : header
+    }
+    https.get(uri, options, (resp) => {
       let data = '';
       resp.on('data', (chunk) => {
         data += chunk;
