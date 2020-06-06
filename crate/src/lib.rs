@@ -14,12 +14,18 @@ extern crate wasm_logger;
 extern crate serde_json;
 extern crate http;
 extern crate anyhow;
+extern crate rusty_pipe;
+extern crate reqwest;
+extern crate async_trait;
+extern crate wasm_bindgen_futures;
+extern crate base64;
 
 use wasm_bindgen::prelude::*;
 
 mod app;
 use app::App;
 mod graphql;
+mod downloader;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the

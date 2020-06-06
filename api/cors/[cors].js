@@ -1,30 +1,47 @@
-module.exports = (req, res) => {
+const allowCors = fn => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // another option
+  // res.setHeader('Access-Control-Allow-Origin', req.header.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, x-youtube-client-name, x-youtube-client-version'
+  )
+  if (req.method === 'OPTIONS') {
+    res.status(200).end()
+    return
+  }
+  return await fn(req, res)
+}
+
+const handler = (req, res) => {
     const {
       query: { cors }
     } = req;
     var uri = Buffer.from(cors, 'base64').toString('ascii');
-  
+
+    var header = {};
+    if(req.header("x-youtube-client-name")){
+        header["x-youtube-client-name"]=req.header("x-youtube-client-name");
+    }
+    if(req.header("x-youtube-client-version")){
+        header["x-youtube-client-version"]=req.header("x-youtube-client-version");
+    }
 
 
     const https = require('https');
-
     https.get(uri, (resp) => {
       let data = '';
-
-      // A chunk of data has been recieved.
       resp.on('data', (chunk) => {
         data += chunk;
       });
-
-      // The whole response has been received. Print out the result.
       resp.on('end', () => {
         res.send(data);
       });
-
     }).on("error", (err) => {
       res.send(err.message)
     });
-
-
-
   }
+
+  module.exports = allowCors(handler)

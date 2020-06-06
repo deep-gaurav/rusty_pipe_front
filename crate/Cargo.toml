@@ -7,6 +7,7 @@ name = "rusty_pipe_front"
 readme = "./README.md"
 # repository = "https://github.com/spielrs/yew-parcel-template.git"
 version = "0.0.1"
+edition = "2018"
 
 [lib]
 crate-type = ["cdylib"]
@@ -29,3 +30,8 @@ log = "0.4.6"
 wasm-logger = "0.2.0"
 http = "0.2.1"
 anyhow = "1.0"
+rusty_pipe = {git = "https://github.com/deep-gaurav/rusty_pipe", branch="noquickjs"}
+reqwest = "0.10.6"
+async-trait = "0.1.33"
+wasm-bindgen-futures = "0.4.13"
+base64 = "0.12.1"

@@ -5,6 +5,8 @@ use yew::services::FetchService;
 use super::graphql;
 use graphql_client::GraphQLQuery;
 
+use crate::downloader::{send_future,DownloaderExample};
+
 pub static RUSTY_PIPE_SERVER: &str = "https://rustypipe.herokuapp.com/graphql";
 
 pub struct App {
@@ -18,7 +20,7 @@ pub struct App {
 pub enum Msg {
     Ignore,
     QuerySearch(String),
-    ShowSearch(graphql::suggestion_query::suggestions::SuggestionsSearch),
+    ShowSearch(Vec<String>),
     ToggleNavMenu
 }
 
@@ -46,50 +48,37 @@ impl Component for App {
 
             Msg::QuerySearch(change) => {
                 log::info!("Query: {}", change);
-                use graphql::suggestion_query::{
-                    suggestions::ResponseData, suggestions::Variables, Suggestions,
-                };
-                use graphql_client::Response;
-
-                let query = Suggestions::build_query(Variables { query: change });
-
-                let querys = serde_json::to_string(&query).expect("Query not json");
-                log::info!("{:#?}", querys);
-                // log::info!("{:#?}");
-                let req = http::Request::post(RUSTY_PIPE_SERVER)
-                    .header("Content-Type", "application/json")
-                    .body(Ok(querys))
-                    .expect("Cant make request");
-                let task = self
-                    .fetch_service
-                    .fetch(
-                        req,
-                        self.link
-                            .callback(|res: http::Response<Result<String, anyhow::Error>>| {
-                                let body = res.into_body();
-                                if let Ok(body) = body {
-                                    let bodyres: Response<ResponseData> =
-                                        serde_json::from_str(&body).expect("Not Resp");
-                                    // log::info!("{:#?}",bodyres);
-                                    if let Some(data) = bodyres.data {
-                                        Msg::ShowSearch(data.search)
-                                    } else {
-                                        Msg::Ignore
-                                    }
-                                } else {
+                let ch2 = change.clone();
+                let future = async move {
+                    let change = ch2.clone();
+                    let ytex = rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor::new(DownloaderExample,
+                        &change,
+                        None
+                    ).await;
+                    match ytex{
+                        Ok(extractor)=>{
+                            let suggestions = extractor.get_search_suggestion(&DownloaderExample).await;
+                            match suggestions{
+                                Ok(suggestion)=>Msg::ShowSearch(suggestion),
+                                Err(er)=>{
+                                    log::error!("{:#?}",er);
                                     Msg::Ignore
                                 }
-                            }),
-                    )
-                    .expect("Cant create fetch task");
-                self.suggestion_fetch_task = Some(task);
-
+                            }
+                        },
+                        Err(err)=>{
+                            log::error!("{:#?}",err);
+                            Msg::Ignore
+                        }
+                    }
+                };
+                send_future(self.link.clone(),future);
                 false
             }
 
 
             Msg::ShowSearch(suggestions) => {
-                self.suggestions = suggestions.suggestion;
+                self.suggestions = suggestions;
                 true
             }
 
