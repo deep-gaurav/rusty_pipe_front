@@ -64,6 +64,12 @@ impl Component for SearchResult{
                                 thumburl = String::from(&thumb.url);
                             }
 
+                            let uploader_thumbnails = streaminfo.get_uploader_thumbnails().unwrap_or(vec![]);
+                            let mut avatar=String::default();
+                            if let Some(thumb)= uploader_thumbnails.iter().next(){
+                                avatar = String::from(&thumb.url);
+                            }
+
                             html!{
                                 <div class="tile is-child " style="padding:10px">
                                 <div class="card">
@@ -76,7 +82,7 @@ impl Component for SearchResult{
                                         <div class="media">
                                         <div class="media-left">
                                             <figure class="image is-48x48">
-                                            <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image"/>
+                                            <img src=avatar alt="Placeholder image"/>
                                             </figure>
                                         </div>
                                         <div class="media-content">
