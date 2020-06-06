@@ -26,6 +26,7 @@ mod app;
 use app::App;
 mod graphql;
 mod downloader;
+mod search_result;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the

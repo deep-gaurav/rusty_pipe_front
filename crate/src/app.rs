@@ -7,6 +7,8 @@ use graphql_client::GraphQLQuery;
 
 use crate::downloader::{send_future,DownloaderExample};
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
+use std::convert::TryInto;
+use super::search_result::SearchResult;
 
 pub static RUSTY_PIPE_SERVER: &str = "https://rustypipe.herokuapp.com/graphql";
 
@@ -15,13 +17,18 @@ pub struct App {
     link: ComponentLink<Self>,
     suggestion_fetch_task: Option<yew::services::fetch::FetchTask>,
     suggestions: Vec<String>,
-    show_nav_menu: bool
+    search_inputref: NodeRef,
+    search_result:Option<(String,YTSearchExtractor)>,
+    show_nav_menu: bool,
+    is_loading_search: bool
 }
 
 pub enum Msg {
     Ignore,
     QuerySearch(String),
     ShowSearch(Vec<String>),
+    Search,
+    SearchResult(Option<(String,YTSearchExtractor)>),
     ToggleNavMenu
 }
 
@@ -35,12 +42,48 @@ impl Component for App {
             link,
             suggestion_fetch_task: None,
             suggestions: vec![],
-            show_nav_menu: false
+            show_nav_menu: false,
+            search_inputref: NodeRef::default(),
+            is_loading_search: false,
+            search_result: None
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+
+            Msg::Search=>{
+                // log::info!("Search");
+                if self.is_loading_search{
+                    return false;
+                }
+                use web_sys::{HtmlInputElement};
+                let searchel:HtmlInputElement= self.search_inputref.cast().expect("Not htmlinputelement");
+                let searchquery = searchel.value();
+                self.is_loading_search=true;
+                let future = async move {
+                    let ytex = YTSearchExtractor::new(DownloaderExample,&searchquery,None).await;
+                    let ytex = ytex.ok();
+                    if let Some(ytex)=ytex{
+                      Msg::SearchResult(Some((searchquery,ytex)))
+                    }else{
+                      Msg::SearchResult(None)
+                    }
+                };
+                send_future(self.link.clone(),future);
+                true
+            }
+
+            Msg::SearchResult(extractor)=>{
+                self.is_loading_search=false;
+                match extractor{
+                    Some(extractor)=>{
+                        self.search_result=Some(extractor);
+                        true
+                    }
+                    None=>true
+                }
+            }
 
             Msg::ToggleNavMenu => {
               self.show_nav_menu = !self.show_nav_menu;
@@ -48,7 +91,7 @@ impl Component for App {
             }
 
             Msg::QuerySearch(change) => {
-                log::info!("Query: {}", change);
+                // log::info!("Query: {}", change);
                 let ch2 = change.clone();
                 let future = async move {
                     let change = ch2.clone();
@@ -117,12 +160,24 @@ impl Component for App {
                   <div class="navbar-item">
                     <div class="dropdown is-hoverable">
                       <div class="dropdown-trigger">
-                        <div class="field">
-                          <div class="control has-icons-left is-expanded">
-                            <input class="input" oninput=self.link.callback(
+                        <div class="field has-addons">
+                          <div class="control is-expanded">
+                            <input ref=self.search_inputref.clone() class="input" oninput=self.link.callback(
                                 |ip:yew::InputData|Msg::QuerySearch(ip.value)
                             ) />
-                            <span class="icon is-left"><i class="fas fa-search"></i></span>
+                          </div>
+                          <div class="control">
+                            <a class={
+                                let mut classes = "button is-info".to_string();
+                                if self.is_loading_search {
+                                  classes = format!("{} is-loading",classes);
+                                }
+                                classes
+                              } onclick=self.link.callback(|_|Msg::Search)>
+                                <span class="icon">
+                                    <i class="fas fa-search" />
+                                </span>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -140,11 +195,18 @@ impl Component for App {
             </div>
             <section class="section">
               <div class="container">
-                <h1 class="title">
-                  {
-                    format!("{:#?}",self.suggestions)
-                  }
-                </h1>
+                 {
+                    if let Some(extractor)=&self.search_result{
+                        html!{
+                            <SearchResult key=extractor.0.clone() extractor=extractor.1.clone() />
+                        }
+                    }else{
+                        html!{
+                            <div>
+                            </div>
+                        }
+                    }
+                 }
               </div>
             </section>
           </>
