@@ -4,16 +4,22 @@ use yew::prelude::*;
 
 pub struct SearchResult{
     link:ComponentLink<Self>,
+    next_page_extractors:Vec<YTSearchExtractor>,
+    is_loading:bool,
+    last_reached:bool,
     props:Props
 }
 
 #[derive(Clone,Properties,PartialEq)]
 pub struct Props{
-    pub extractor: YTSearchExtractor
+    pub extractor: YTSearchExtractor,
+    pub query: String
 }
 
 pub enum Msg{
-
+    LoadNext,
+    Loaded(YTSearchExtractor),
+    LoadFail,
 }
 
 impl Component for SearchResult{
@@ -23,12 +29,63 @@ impl Component for SearchResult{
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self{
             link,
-            props
+            props,
+            next_page_extractors:vec![],
+            is_loading:false,
+            last_reached:false
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> bool {
-        false
+        match msg{
+            Msg::LoadFail=>{
+                self.is_loading=false;
+                self.last_reached=true;
+                true
+            }
+            Msg::Loaded(extractor)=>{
+                self.next_page_extractors.push(extractor);
+                self.is_loading=false;
+                true
+            }
+            Msg::LoadNext=>{
+                if self.is_loading{
+                    false
+                }else{
+                    self.is_loading=true;
+                    let extractor = self.next_page_extractors.last().unwrap_or(&self.props.extractor);
+                    let next_page_url = extractor.get_next_page_url();
+                    match next_page_url{
+                        Ok(next_page_url)=>{
+                            match next_page_url{
+                                Some(url)=>{
+                                    let query = self.props.query.clone();
+                                    use super::downloader::{send_future,DownloaderExample};
+                                    let future = async move {
+                                        let ytex = YTSearchExtractor::new(DownloaderExample,&query,Some(url)).await;
+                                        let ytex = ytex.ok();
+                                        if let Some(ytex)=ytex{
+                                          Msg::Loaded(ytex)
+                                        }else{
+                                          Msg::LoadFail
+                                        }
+                                    };
+                                    send_future(self.link.clone(),future);
+                                }
+                                None=>{
+                                    self.last_reached=true;
+                                }
+                            }
+                        }
+                        Err(err)=>{
+                            log::error!("{:#?}",err);
+                            self.last_reached=true;
+                        }
+                    }
+                    true
+                }
+            }
+        }
     }
 
     fn change(&mut self, _props: Self::Properties) -> bool {
@@ -37,9 +94,16 @@ impl Component for SearchResult{
 
     fn view(&self) -> Html {
         let cardwidth = 320_f64;
-        let results = self.props.extractor.search_results();
+        let mut results = self.props.extractor.search_results();
         match results{
-            Ok(results)=>{
+            Ok(mut results)=>{
+
+                for page in self.next_page_extractors.iter(){
+                    if let Ok(mut page_result)=page.search_results(){
+                        results.append(&mut page_result);
+                    }
+                }
+
                 let window_width = yew::utils::window().inner_width().expect("Cant get window width").as_f64().expect("window width not number");
 
                 let cardscolumn = (window_width/cardwidth).floor() as usize;
@@ -141,7 +205,24 @@ impl Component for SearchResult{
                 
 
                 html!{
+                    <>
                     {for rows}
+                    {
+                        if !self.last_reached{
+                            html!{
+                                <button onclick=self.link.callback(|_|Msg::LoadNext) class={
+                                    let mut classes = "button is-fullwidth".to_string();
+                                    if self.is_loading {
+                                      classes = format!("{} is-loading",classes);
+                                    }
+                                    classes
+                                }>{"Load More"}</button>
+                            }
+                        }else{
+                            html!{}
+                        }
+                    }
+                    </>
                 }
             }
             Err(err)=>{

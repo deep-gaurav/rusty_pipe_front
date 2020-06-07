@@ -232,7 +232,7 @@ impl Component for App {
                  {
                     if let Some(extractor)=&self.search_result{
                         html!{
-                            <SearchResult key=extractor.0.clone() extractor=extractor.1.clone() />
+                            <SearchResult key=extractor.0.clone() query=extractor.0.clone() extractor=extractor.1.clone() />
                         }
                     }else{
                         html!{
