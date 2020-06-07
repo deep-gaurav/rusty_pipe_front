@@ -72,9 +72,9 @@ impl Component for SearchResult{
 
                             html!{
                                 <div class="tile is-child " style="padding:10px">
-                                <div class="card">
+                                <div class="card" style="height:100%">
                                     <div class="card-image">
-                                        <figure class="image is-4by3">
+                                        <figure class="image is-4by2">
                                         <img src=thumburl alt="Placeholder image"/>
                                         </figure>
                                     </div>
@@ -86,7 +86,7 @@ impl Component for SearchResult{
                                             </figure>
                                         </div>
                                         <div class="media-content">
-                                            <p class="title is-5">{vid_name}</p>
+                                            <p class="title is-6">{vid_name}</p>
                                             <p class="subtitle is-6">{author_name}</p>
                                         </div>
                                         </div>

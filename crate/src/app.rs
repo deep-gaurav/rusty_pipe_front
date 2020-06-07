@@ -29,6 +29,7 @@ pub enum Msg {
     ShowSearch(Vec<String>),
     Search,
     SearchResult(Option<(String,YTSearchExtractor)>),
+    ClickSuggestion(String),
     ToggleNavMenu
 }
 
@@ -72,6 +73,28 @@ impl Component for App {
                 };
                 send_future(self.link.clone(),future);
                 true
+            }
+
+            Msg::ClickSuggestion(suggestion)=>{
+              use web_sys::{HtmlInputElement};
+                let searchel:HtmlInputElement= self.search_inputref.cast().expect("Not htmlinputelement");
+                let searchquery = searchel.set_value(&suggestion);
+                let ch2 = suggestion.clone();
+                let future = async move {
+                    let change = ch2.clone();
+                    let ytex = YTSearchExtractor::get_search_suggestion(&change,&DownloaderExample).await;
+                    match ytex{
+                        Ok(suggestion)=>{
+                            Msg::ShowSearch(suggestion)
+                        },
+                        Err(err)=>{
+                            log::error!("{:#?}",err);
+                            Msg::Ignore
+                        }
+                    }
+                };
+                send_future(self.link.clone(),future);
+              false
             }
 
             Msg::SearchResult(extractor)=>{
@@ -126,18 +149,24 @@ impl Component for App {
 
     fn view(&self) -> Html {
         let suggestionlist = html! {
-          for self.suggestions.iter().map(|s|
+          for self.suggestions.iter().map(|s|{
+            let s2 = s.clone();
             html!{
-              <a href="#" key=s.to_string() class="dropdown-item">
+              <a href="#" key=s.to_string() class="dropdown-item"
+                onclick=self.link.callback(move |_| {
+                  
+                  Msg::ClickSuggestion(s2.to_string())
+                })
+              >
                 {s}
               </a>
-            }
+            }}
           )
         };
 
         html! {
           <>
-            <div class="navbar is-active">
+            <div class="navbar is-active" style="position:sticky;top:0;">
               <div class="navbar-brand">
                 <div class="navbar-item">
                   <h2 class="title">{"RustyPipe"}</h2>
@@ -158,37 +187,42 @@ impl Component for App {
               }>
                 <div class="navbar-end">
                   <div class="navbar-item">
+                  <div class="field has-addons">
+                  <div class="control is-expanded">
+
                     <div class="dropdown is-hoverable">
                       <div class="dropdown-trigger">
-                        <div class="field has-addons">
-                          <div class="control is-expanded">
                             <input ref=self.search_inputref.clone() class="input" oninput=self.link.callback(
                                 |ip:yew::InputData|Msg::QuerySearch(ip.value)
                             ) />
-                          </div>
-                          <div class="control">
-                            <a class={
-                                let mut classes = "button is-info".to_string();
-                                if self.is_loading_search {
-                                  classes = format!("{} is-loading",classes);
-                                }
-                                classes
-                              } onclick=self.link.callback(|_|Msg::Search)>
-                                <span class="icon">
-                                    <i class="fas fa-search" />
-                                </span>
-                            </a>
-                          </div>
+                          
                         </div>
-                      </div>
-                      <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
                           {
                             suggestionlist
                           }
                         </div>
                       </div>
+                      </div>
+                      
                     </div>
+                    <div class="control">
+                    <a class={
+                        let mut classes = "button is-info".to_string();
+                        if self.is_loading_search {
+                          classes = format!("{} is-loading",classes);
+                        }
+                        classes
+                      } onclick=self.link.callback(|_|Msg::Search)>
+                        <span class="icon">
+                            <i class="fas fa-search" />
+                        </span>
+                    </a>
+                  </div>
+                    </div>
+
+                    
                   </div>
                 </div>
               </div>
