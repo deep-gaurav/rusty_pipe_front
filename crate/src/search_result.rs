@@ -66,6 +66,9 @@ impl Component for SearchResult{
 
                             let uploader_thumbnails = streaminfo.get_uploader_thumbnails().unwrap_or(vec![]);
                             let mut avatar=String::default();
+
+                            let duration = streaminfo.get_textual_duration().unwrap_or_default();
+
                             if let Some(thumb)= uploader_thumbnails.iter().next(){
                                 avatar = String::from(&thumb.url);
                             }
@@ -76,6 +79,10 @@ impl Component for SearchResult{
                                     <div class="card-image">
                                         <figure class="image is-4by2">
                                         <img src=thumburl alt="Placeholder image"/>
+
+                                        <span class="tag" style="position:absolute;right:5px;bottom:5px;">
+                                            {duration}
+                                        </span>
                                         </figure>
                                     </div>
                                     <div class="card-content">

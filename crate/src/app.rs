@@ -188,7 +188,7 @@ impl Component for App {
                 <div class="navbar-end">
                   <div class="navbar-item">
                   <div class="field has-addons">
-                  <div class="control is-expanded">
+                  <div class="control">
 
                     <div class="dropdown is-hoverable">
                       <div class="dropdown-trigger">
