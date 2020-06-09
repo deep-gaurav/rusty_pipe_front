@@ -1,36 +1,27 @@
-use yew::format::Json;
 use yew::prelude::*;
-use yew::services::FetchService;
 
-use super::graphql;
-use graphql_client::GraphQLQuery;
 
-use crate::downloader::{send_future,DownloaderExample};
-use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
-use std::convert::TryInto;
 use super::search_result::SearchResult;
-
-pub static RUSTY_PIPE_SERVER: &str = "https://rustypipe.herokuapp.com/graphql";
+use crate::downloader::{send_future, DownloaderExample};
+use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 
 pub struct App {
-    fetch_service: FetchService,
     link: ComponentLink<Self>,
-    suggestion_fetch_task: Option<yew::services::fetch::FetchTask>,
     suggestions: Vec<String>,
     search_inputref: NodeRef,
-    search_result:Option<(String,YTSearchExtractor)>,
+    search_result: Option<(String, YTSearchExtractor)>,
     show_nav_menu: bool,
-    is_loading_search: bool
+    is_loading_search: bool,
 }
 
 pub enum Msg {
     Ignore,
     QuerySearch(String),
-    ShowSearch(String,Vec<String>),
+    ShowSearch(String, Vec<String>),
     Search,
-    SearchResult(Option<(String,YTSearchExtractor)>),
+    SearchResult(Option<(String, YTSearchExtractor)>),
     ClickSuggestion(String),
-    ToggleNavMenu
+    ToggleNavMenu,
 }
 
 impl Component for App {
@@ -39,78 +30,76 @@ impl Component for App {
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         App {
-            fetch_service: FetchService::default(),
             link,
-            suggestion_fetch_task: None,
             suggestions: vec![],
             show_nav_menu: false,
             search_inputref: NodeRef::default(),
             is_loading_search: false,
-            search_result: None
+            search_result: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-
-            Msg::Search=>{
+            Msg::Search => {
                 // log::info!("Search");
-                if self.is_loading_search{
+                if self.is_loading_search {
                     return false;
                 }
-                use web_sys::{HtmlInputElement};
-                let searchel:HtmlInputElement= self.search_inputref.cast().expect("Not htmlinputelement");
+                use web_sys::HtmlInputElement;
+                let searchel: HtmlInputElement =
+                    self.search_inputref.cast().expect("Not htmlinputelement");
                 let searchquery = searchel.value();
-                self.is_loading_search=true;
+                self.is_loading_search = true;
                 let future = async move {
-                    let ytex = YTSearchExtractor::new(DownloaderExample,&searchquery,None).await;
+                    let ytex = YTSearchExtractor::new(DownloaderExample, &searchquery, None).await;
                     let ytex = ytex.ok();
-                    if let Some(ytex)=ytex{
-                      Msg::SearchResult(Some((searchquery,ytex)))
-                    }else{
-                      Msg::SearchResult(None)
+                    if let Some(ytex) = ytex {
+                        Msg::SearchResult(Some((searchquery, ytex)))
+                    } else {
+                        Msg::SearchResult(None)
                     }
                 };
-                send_future(self.link.clone(),future);
+                send_future(self.link.clone(), future);
                 true
             }
 
-            Msg::ClickSuggestion(suggestion)=>{
-              use web_sys::{HtmlInputElement};
-                let searchel:HtmlInputElement= self.search_inputref.cast().expect("Not htmlinputelement");
-                let searchquery = searchel.set_value(&suggestion);
+            Msg::ClickSuggestion(suggestion) => {
+                use web_sys::HtmlInputElement;
+                let searchel: HtmlInputElement =
+                    self.search_inputref.cast().expect("Not htmlinputelement");
+                searchel.set_value(&suggestion);
                 let ch2 = suggestion.clone();
                 let future = async move {
                     let change = ch2.clone();
-                    let ytex = YTSearchExtractor::get_search_suggestion(&change,&DownloaderExample).await;
-                    match ytex{
-                        Ok(suggestion)=>{
-                            Msg::ShowSearch(change,suggestion)
-                        },
-                        Err(err)=>{
-                            log::error!("{:#?}",err);
+                    let ytex =
+                        YTSearchExtractor::get_search_suggestion(&change, &DownloaderExample).await;
+                    match ytex {
+                        Ok(suggestion) => Msg::ShowSearch(change, suggestion),
+                        Err(err) => {
+                            log::error!("{:#?}", err);
                             Msg::Ignore
                         }
                     }
                 };
-                send_future(self.link.clone(),future);
-              false
+                send_future(self.link.clone(), future);
+                false
             }
 
-            Msg::SearchResult(extractor)=>{
-                self.is_loading_search=false;
-                match extractor{
-                    Some(extractor)=>{
-                        self.search_result=Some(extractor);
+            Msg::SearchResult(extractor) => {
+                self.is_loading_search = false;
+                match extractor {
+                    Some(extractor) => {
+                        self.search_result = Some(extractor);
                         true
                     }
-                    None=>true
+                    None => true,
                 }
             }
 
             Msg::ToggleNavMenu => {
-              self.show_nav_menu = !self.show_nav_menu;
-              true
+                self.show_nav_menu = !self.show_nav_menu;
+                true
             }
 
             Msg::QuerySearch(change) => {
@@ -118,33 +107,31 @@ impl Component for App {
                 let ch2 = change.clone();
                 let future = async move {
                     let change = ch2.clone();
-                    let ytex = YTSearchExtractor::get_search_suggestion(&change,&DownloaderExample).await;
-                    match ytex{
-                        Ok(suggestion)=>{
-                            Msg::ShowSearch(change,suggestion)
-                        },
-                        Err(err)=>{
-                            log::error!("{:#?}",err);
+                    let ytex =
+                        YTSearchExtractor::get_search_suggestion(&change, &DownloaderExample).await;
+                    match ytex {
+                        Ok(suggestion) => Msg::ShowSearch(change, suggestion),
+                        Err(err) => {
+                            log::error!("{:#?}", err);
                             Msg::Ignore
                         }
                     }
                 };
-                send_future(self.link.clone(),future);
+                send_future(self.link.clone(), future);
                 false
             }
 
-
-            Msg::ShowSearch(query,suggestions) => {
-              use web_sys::{HtmlInputElement};
-              let searchel:HtmlInputElement= self.search_inputref.cast().expect("Not htmlinputelement");
-              let searchquery = searchel.value();
-              if query==searchquery{
-                self.suggestions = suggestions;
-                true
-              }
-              else{
-                false
-              }
+            Msg::ShowSearch(query, suggestions) => {
+                use web_sys::HtmlInputElement;
+                let searchel: HtmlInputElement =
+                    self.search_inputref.cast().expect("Not htmlinputelement");
+                let searchquery = searchel.value();
+                if query == searchquery {
+                    self.suggestions = suggestions;
+                    true
+                } else {
+                    false
+                }
             }
 
             Msg::Ignore => false,
@@ -162,7 +149,7 @@ impl Component for App {
             html!{
               <a href="#" key=s.to_string() class="dropdown-item"
                 onclick=self.link.callback(move |_| {
-                  
+
                   Msg::ClickSuggestion(s2.to_string())
                 })
               >
@@ -203,7 +190,7 @@ impl Component for App {
                             <input ref=self.search_inputref.clone() class="input" oninput=self.link.callback(
                                 |ip:yew::InputData|Msg::QuerySearch(ip.value)
                             ) />
-                          
+
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
@@ -213,7 +200,7 @@ impl Component for App {
                         </div>
                       </div>
                       </div>
-                      
+
                     </div>
                     <div class="control">
                     <a class={
@@ -230,7 +217,7 @@ impl Component for App {
                   </div>
                     </div>
 
-                    
+
                   </div>
                 </div>
               </div>

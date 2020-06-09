@@ -1,85 +1,91 @@
-use yew::{ComponentLink, Component, Html};
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 use yew::prelude::*;
+use yew::{Component, ComponentLink, Html};
 
-pub struct SearchResult{
-    link:ComponentLink<Self>,
-    next_page_extractors:Vec<YTSearchExtractor>,
-    is_loading:bool,
-    last_reached:bool,
-    props:Props
+pub struct SearchResult {
+    link: ComponentLink<Self>,
+    next_page_extractors: Vec<YTSearchExtractor>,
+    is_loading: bool,
+    last_reached: bool,
+    props: Props,
 }
 
-#[derive(Clone,Properties,PartialEq)]
-pub struct Props{
+#[derive(Clone, Properties, PartialEq)]
+pub struct Props {
     pub extractor: YTSearchExtractor,
-    pub query: String
+    pub query: String,
 }
 
-pub enum Msg{
+pub enum Msg {
     LoadNext,
     Loaded(YTSearchExtractor),
     LoadFail,
 }
 
-impl Component for SearchResult{
+impl Component for SearchResult {
     type Message = Msg;
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self{
+        Self {
             link,
             props,
-            next_page_extractors:vec![],
-            is_loading:false,
-            last_reached:false
+            next_page_extractors: vec![],
+            is_loading: false,
+            last_reached: false,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> bool {
-        match msg{
-            Msg::LoadFail=>{
-                self.is_loading=false;
-                self.last_reached=true;
+        match msg {
+            Msg::LoadFail => {
+                self.is_loading = false;
+                self.last_reached = true;
                 true
             }
-            Msg::Loaded(extractor)=>{
+            Msg::Loaded(extractor) => {
                 self.next_page_extractors.push(extractor);
-                self.is_loading=false;
+                self.is_loading = false;
                 true
             }
-            Msg::LoadNext=>{
-                if self.is_loading{
+            Msg::LoadNext => {
+                if self.is_loading {
                     false
-                }else{
-                    self.is_loading=true;
-                    let extractor = self.next_page_extractors.last().unwrap_or(&self.props.extractor);
+                } else {
+                    self.is_loading = true;
+                    let extractor = self
+                        .next_page_extractors
+                        .last()
+                        .unwrap_or(&self.props.extractor);
                     let next_page_url = extractor.get_next_page_url();
-                    match next_page_url{
-                        Ok(next_page_url)=>{
-                            match next_page_url{
-                                Some(url)=>{
-                                    let query = self.props.query.clone();
-                                    use super::downloader::{send_future,DownloaderExample};
-                                    let future = async move {
-                                        let ytex = YTSearchExtractor::new(DownloaderExample,&query,Some(url)).await;
-                                        let ytex = ytex.ok();
-                                        if let Some(ytex)=ytex{
-                                          Msg::Loaded(ytex)
-                                        }else{
-                                          Msg::LoadFail
-                                        }
-                                    };
-                                    send_future(self.link.clone(),future);
-                                }
-                                None=>{
-                                    self.last_reached=true;
-                                }
+                    match next_page_url {
+                        Ok(next_page_url) => match next_page_url {
+                            Some(url) => {
+                                let query = self.props.query.clone();
+                                use super::downloader::{send_future, DownloaderExample};
+                                let future = async move {
+                                    let ytex = YTSearchExtractor::new(
+                                        DownloaderExample,
+                                        &query,
+                                        Some(url),
+                                    )
+                                    .await;
+                                    let ytex = ytex.ok();
+                                    if let Some(ytex) = ytex {
+                                        Msg::Loaded(ytex)
+                                    } else {
+                                        Msg::LoadFail
+                                    }
+                                };
+                                send_future(self.link.clone(), future);
                             }
-                        }
-                        Err(err)=>{
-                            log::error!("{:#?}",err);
-                            self.last_reached=true;
+                            None => {
+                                self.last_reached = true;
+                            }
+                        },
+                        Err(err) => {
+                            log::error!("{:#?}", err);
+                            self.last_reached = true;
                         }
                     }
                     true
@@ -95,22 +101,23 @@ impl Component for SearchResult{
     fn view(&self) -> Html {
         let cardwidth = 320_f64;
         let results = self.props.extractor.search_results();
-        match results{
-            Ok(mut results)=>{
-
-                for page in self.next_page_extractors.iter(){
-                    if let Ok(mut page_result)=page.search_results(){
+        match results {
+            Ok(mut results) => {
+                for page in self.next_page_extractors.iter() {
+                    if let Ok(mut page_result) = page.search_results() {
                         results.append(&mut page_result);
                     }
                 }
 
-                let window_width = yew::utils::window().inner_width().expect("Cant get window width").as_f64().expect("window width not number");
+                let window_width = yew::utils::window()
+                    .inner_width()
+                    .expect("Cant get window width")
+                    .as_f64()
+                    .expect("window width not number");
 
-                let cardscolumn = (window_width/cardwidth).floor() as usize;
+                let cardscolumn = (window_width / cardwidth).floor() as usize;
 
-                let mut rows= vec![];
-
-                
+                let mut rows = vec![];
 
                 let mut m=results.iter().map(|result|{
                     use rusty_pipe::youtube_extractor::search_extractor::YTSearchItem;
@@ -208,28 +215,25 @@ impl Component for SearchResult{
                     }
                 });
 
-                for i in 0..(m.len()/cardscolumn){
+                for _i in 0..(m.len() / cardscolumn) {
                     let mut row = vec![];
-                    for j in 0..cardscolumn{
-                        if let Some(item)= m.next(){
+                    for _j in 0..cardscolumn {
+                        if let Some(item) = m.next() {
                             row.push(item.clone());
                         }
                     }
                     // let row = row.iter().map(|c|html!{<>{c}</>});
-                    rows.push(
-                        html!{
+                    rows.push(html! {
 
-                            <div class="tile is-ancestor">
-                                <div class="tile is-parent">
-                                    {for row}
-                                </div>
+                        <div class="tile is-ancestor">
+                            <div class="tile is-parent">
+                                {for row}
                             </div>
-                        }
-                    );
+                        </div>
+                    });
                 }
-                
 
-                html!{
+                html! {
                     <>
                     {for rows}
                     {
@@ -250,8 +254,8 @@ impl Component for SearchResult{
                     </>
                 }
             }
-            Err(err)=>{
-                html!{
+            Err(err) => {
+                html! {
                     <article class="message is-danger">
                         <div class="message-header">
                             <p>{"Error"}</p>

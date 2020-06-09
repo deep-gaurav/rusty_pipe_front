@@ -3,29 +3,29 @@
 #[macro_use]
 extern crate cfg_if;
 
+extern crate anyhow;
+extern crate async_trait;
+extern crate base64;
+extern crate graphql_client;
+extern crate http;
+extern crate log;
+extern crate reqwest;
+extern crate rusty_pipe;
+extern crate serde;
+extern crate serde_json;
 extern crate wasm_bindgen;
+extern crate wasm_bindgen_futures;
+extern crate wasm_logger;
 extern crate web_sys;
 extern crate yew;
 extern crate yew_router;
-extern crate serde;
-extern crate graphql_client;
-extern crate log;
-extern crate wasm_logger;
-extern crate serde_json;
-extern crate http;
-extern crate anyhow;
-extern crate rusty_pipe;
-extern crate reqwest;
-extern crate async_trait;
-extern crate wasm_bindgen_futures;
-extern crate base64;
 
 use wasm_bindgen::prelude::*;
 
 mod app;
 use app::App;
-mod graphql;
 mod downloader;
+mod graphql;
 mod search_result;
 
 cfg_if! {
