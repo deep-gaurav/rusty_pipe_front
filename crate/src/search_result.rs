@@ -94,7 +94,7 @@ impl Component for SearchResult{
 
     fn view(&self) -> Html {
         let cardwidth = 320_f64;
-        let mut results = self.props.extractor.search_results();
+        let results = self.props.extractor.search_results();
         match results{
             Ok(mut results)=>{
 

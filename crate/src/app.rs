@@ -26,7 +26,7 @@ pub struct App {
 pub enum Msg {
     Ignore,
     QuerySearch(String),
-    ShowSearch(Vec<String>),
+    ShowSearch(String,Vec<String>),
     Search,
     SearchResult(Option<(String,YTSearchExtractor)>),
     ClickSuggestion(String),
@@ -85,7 +85,7 @@ impl Component for App {
                     let ytex = YTSearchExtractor::get_search_suggestion(&change,&DownloaderExample).await;
                     match ytex{
                         Ok(suggestion)=>{
-                            Msg::ShowSearch(suggestion)
+                            Msg::ShowSearch(change,suggestion)
                         },
                         Err(err)=>{
                             log::error!("{:#?}",err);
@@ -121,7 +121,7 @@ impl Component for App {
                     let ytex = YTSearchExtractor::get_search_suggestion(&change,&DownloaderExample).await;
                     match ytex{
                         Ok(suggestion)=>{
-                            Msg::ShowSearch(suggestion)
+                            Msg::ShowSearch(change,suggestion)
                         },
                         Err(err)=>{
                             log::error!("{:#?}",err);
@@ -134,9 +134,17 @@ impl Component for App {
             }
 
 
-            Msg::ShowSearch(suggestions) => {
+            Msg::ShowSearch(query,suggestions) => {
+              use web_sys::{HtmlInputElement};
+              let searchel:HtmlInputElement= self.search_inputref.cast().expect("Not htmlinputelement");
+              let searchquery = searchel.value();
+              if query==searchquery{
                 self.suggestions = suggestions;
                 true
+              }
+              else{
+                false
+              }
             }
 
             Msg::Ignore => false,
