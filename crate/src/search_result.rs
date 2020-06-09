@@ -152,7 +152,7 @@ impl Component for SearchResult {
                                 <div class="card" style="height:100%">
                                     <div class="card-image">
                                         <figure class="image is-4by2">
-                                        <img src=thumburl alt="Placeholder image"/>
+                                        <img src=thumburl alt="Video Thumbnail"/>
 
                                         <span class="tag" style="position:absolute;right:5px;bottom:5px;">
                                             {duration}
@@ -163,7 +163,7 @@ impl Component for SearchResult {
                                         <div class="media">
                                         <div class="media-left">
                                             <figure class="image is-48x48">
-                                            <img src=avatar alt="Placeholder image"/>
+                                            <img src=avatar alt="Channelavatar" style="border-radius: 50%"/>
                                             </figure>
                                         </div>
                                         <div class="media-content">
@@ -201,13 +201,24 @@ impl Component for SearchResult {
                             }
                             let name = channelinfo.get_name().unwrap_or_default();
                             thumburl = rusty_pipe::utils::utils::fix_thumbnail_url(&thumburl);
+
+                            let subscribers = channelinfo.get_subscriber_count().map(|i|format!("{} subs",i)).unwrap_or_default();
+                            let videos = channelinfo.get_stream_count().map(|i|format!("{} videos",i)).unwrap_or_default();
                             html!{
                                 <div class="tile is-child" style="padding:10px">
-                                    <div class="container">
+                                    <div class="container mb-4 mt-4">
                                         <figure class="image is-1by1">
-                                            <img src=thumburl style="border-radius: 50%" />
+                                            <img src=thumburl alt="Channel Thumbnail" style="border-radius: 50%" />
                                         </figure>
-                                        <p class="title is-6 has-text-centered">{name}</p>
+                                        <p class="title is-6 has-text-centered mt-3">{name}</p>
+                                        <div class="level is-mobile">
+                                            <div class="level-item">
+                                                {subscribers}
+                                            </div>
+                                            <div class="level-item">
+                                                {videos}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             }
