@@ -1,6 +1,5 @@
 use yew::prelude::*;
 
-
 use super::search_result::SearchResult;
 use crate::downloader::{send_future, DownloaderExample};
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
