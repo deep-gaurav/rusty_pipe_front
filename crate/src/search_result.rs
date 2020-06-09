@@ -206,11 +206,11 @@ impl Component for SearchResult {
                             let videos = channelinfo.get_stream_count().map(|i|format!("{} videos",i)).unwrap_or_default();
                             html!{
                                 <div class="tile is-child" style="padding:10px">
-                                    <div class="container mb-4 mt-4">
+                                    <div class="container mb-4 mt-1">
                                         <figure class="image is-1by1">
                                             <img src=thumburl alt="Channel Thumbnail" style="border-radius: 50%" />
                                         </figure>
-                                        <p class="title is-6 has-text-centered mt-3">{name}</p>
+                                        <p class="title is-6 has-text-centered mt-3 mb-1">{name}</p>
                                         <div class="level is-mobile">
                                             <div class="level-item">
                                                 {subscribers}
