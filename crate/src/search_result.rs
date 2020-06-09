@@ -133,6 +133,9 @@ impl Component for SearchResult{
 
                             let duration = streaminfo.get_textual_duration().unwrap_or_default();
 
+                            let viewcount = streaminfo.get_textual_view_count().unwrap_or_default();
+                            let upload_date = streaminfo.get_textual_upload_date().unwrap_or_default();
+
                             if let Some(thumb)= uploader_thumbnails.iter().next(){
                                 avatar = String::from(&thumb.url);
                             }
@@ -161,9 +164,15 @@ impl Component for SearchResult{
                                             <p class="subtitle is-6">{author_name}</p>
                                         </div>
                                         </div>
-
                                         <div class="content">
-                                        
+                                            <div class="level is-mobile">
+                                                <div class="level-item">
+                                                    {viewcount}
+                                                </div>
+                                                <div class="level-item">
+                                                    {upload_date}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     </div>
@@ -171,13 +180,29 @@ impl Component for SearchResult{
                             }
                         }
                         YTSearchItem::PlaylistInfoItem(playlistinfo)=>{
+                            
                             html!{
 
                             }
                         }
                         YTSearchItem::ChannelInfoItem(channelinfo)=>{
+                            let mut avatars = channelinfo.get_thumbnails().unwrap_or(vec![]);
+                            avatars.sort_by_key(|t| (cardwidth - t.width as f64).abs() as u64);
+                            let mut thumburl=String::default();
+                            if let Some(thumb)= avatars.iter().next(){
+                                thumburl = String::from(&thumb.url);
+                            }
+                            let name = channelinfo.get_name().unwrap_or_default();
+                            thumburl = rusty_pipe::utils::utils::fix_thumbnail_url(&thumburl);
                             html!{
-
+                                <div class="tile is-child" style="padding:10px">
+                                    <div class="container">
+                                        <figure class="image is-1by1">
+                                            <img src=thumburl style="border-radius: 50%" />
+                                        </figure>
+                                        <p class="title is-6 has-text-centered">{name}</p>
+                                    </div>
+                                </div>
                             }
                         }
                     }

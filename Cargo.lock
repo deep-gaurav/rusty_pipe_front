@@ -1106,7 +1106,7 @@ dependencies = [
 [[package]]
 name = "rusty_pipe"
 version = "0.1.0"
-source = "git+https://github.com/deep-gaurav/rusty_pipe?branch=noquickjs#b9b90082c8a8ec6473abb7c044df3715938c779c"
+source = "git+https://github.com/deep-gaurav/rusty_pipe?branch=noquickjs#f7da6c5a6ae1121541b130497c926b30ecae6afc"
 dependencies = [
  "async-trait",
  "failure",
