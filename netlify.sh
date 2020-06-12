@@ -2,7 +2,7 @@
 
 if [ -f prebuild/index.html ]; then
    mkdir dist
-   cp prebuild/* dist/*
+   cp prebuild/* dist/
 fi
 if [ ! -f prebuild/index.html]; then
    set -e
