@@ -17,7 +17,7 @@ const options = {
     outDir: './dist', 
     // outFile: 'index.html',
     // publicUrl: '/',
-    // watch: buildType !=='production',
+    watch: buildType !=='production',
     minify: buildType === 'production',
   };
 
