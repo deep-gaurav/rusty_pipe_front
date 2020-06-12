@@ -2,6 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 use super::search_result::SearchResult;
+use super::trending::Trending;
 use crate::downloader::{send_future, DownloaderExample};
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 
@@ -23,7 +24,7 @@ pub enum Msg {
     ToggleNavMenu,
 }
 
-#[derive(Switch, Debug,Clone)]
+#[derive(Switch, Debug, Clone)]
 pub enum AppRoute {
     #[to = "/search/{query}"]
     Search(String),
@@ -108,7 +109,6 @@ impl Component for App {
                     }
                 };
                 send_future(self.link.clone(), future);
-                
 
                 false
             }
@@ -220,7 +220,9 @@ impl Component for App {
                  <Router<AppRoute, ()>
                     render = Router::render(|switch: AppRoute| {
                       match switch{
-                        AppRoute::Home => html!{},
+                        AppRoute::Home => html!{
+                          <Trending />
+                        },
                         AppRoute::Search(query) =>{
                           log::info!("query : {}",query);
                           html!{

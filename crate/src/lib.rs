@@ -25,6 +25,7 @@ mod app;
 use app::App;
 mod downloader;
 mod search_result;
+mod trending;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the
