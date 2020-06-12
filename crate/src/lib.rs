@@ -6,7 +6,6 @@ extern crate cfg_if;
 extern crate anyhow;
 extern crate async_trait;
 extern crate base64;
-extern crate graphql_client;
 extern crate http;
 extern crate log;
 extern crate reqwest;
@@ -25,7 +24,6 @@ use wasm_bindgen::prelude::*;
 mod app;
 use app::App;
 mod downloader;
-mod graphql;
 mod search_result;
 
 cfg_if! {

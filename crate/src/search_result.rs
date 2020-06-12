@@ -218,9 +218,46 @@ impl Component for SearchResult {
                             }
                         }
                         YTSearchItem::PlaylistInfoItem(playlistinfo)=>{
-                            
-                            html!{
 
+                            let name = playlistinfo.get_name().unwrap_or("".to_owned());
+
+                            let mut thumbnails = playlistinfo.get_thumbnails().unwrap_or(vec![]);
+                            thumbnails.sort_by_key(|t| (cardwidth - t.width as f64).abs() as u64);
+                            let mut thumburl=String::default();
+                            if let Some(thumb)= thumbnails.iter().next(){
+                                thumburl = String::from(&thumb.url);
+                            }
+
+                            let uploader = playlistinfo.get_uploader_name().unwrap_or_default();
+
+                            let video_count = playlistinfo.get_stream_count().unwrap_or_default();
+
+                            html!{
+                                <div class="tile is-child " style="padding:10px">
+                                <div class="card" style="height:100%">
+                                    <div class="card-image">
+                                        <figure class="image is-4by2">
+                                        <img src=thumburl alt="Playlist Thumbnail"/>
+                                        <div class="container level" style="position:absolute;right:0px;bottom:0px;width:50%;height:100%;background-color:#808080c3;">
+                                            <div style="width:100%" class="has-text-centered has-text-light">
+                                                <span class="icon is-large">
+                                                    <i class="fas fa-2x fa-play"></i>
+                                                </span>
+                                                <p class="is-5">{format!("{} videos",video_count)}</p>
+                                            </div>
+                                        </div>
+                                        </figure>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="media">
+                                        <div class="media-content">
+                                            <p class="title is-6">{name}</p>
+                                            <p class="subtitle is-6">{uploader}</p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    </div>
                             }
                         }
                         YTSearchItem::ChannelInfoItem(channelinfo)=>{
