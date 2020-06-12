@@ -8,10 +8,10 @@
     <title>Rusty Pipe Front</title>
     <script src="app/index.ts"></script>
     <script type="module">
-      import init, { run } from './rusty_pipe_front.js';
+      import init, { run } from '/rusty_pipe_front.js';
 
       const start = async() => {
-        await init('./rusty_pipe_front_bg.wasm');
+        await init('/rusty_pipe_front_bg.wasm');
         run();
       };
 

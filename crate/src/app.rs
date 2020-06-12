@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use yew_router::prelude::*;
 
 use super::search_result::SearchResult;
 use crate::downloader::{send_future, DownloaderExample};
@@ -18,9 +19,16 @@ pub enum Msg {
     QuerySearch(String),
     ShowSearch(String, Vec<String>),
     Search,
-    SearchResult(Option<(String, YTSearchExtractor)>),
     ClickSuggestion(String),
     ToggleNavMenu,
+}
+
+#[derive(Switch, Debug,Clone)]
+pub enum AppRoute {
+    #[to = "/search/{query}"]
+    Search(String),
+    #[to = "/"]
+    Home,
 }
 
 impl Component for App {
@@ -49,17 +57,11 @@ impl Component for App {
                 let searchel: HtmlInputElement =
                     self.search_inputref.cast().expect("Not htmlinputelement");
                 let searchquery = searchel.value();
-                self.is_loading_search = true;
-                let future = async move {
-                    let ytex = YTSearchExtractor::new(DownloaderExample, &searchquery, None).await;
-                    let ytex = ytex.ok();
-                    if let Some(ytex) = ytex {
-                        Msg::SearchResult(Some((searchquery, ytex)))
-                    } else {
-                        Msg::SearchResult(None)
-                    }
-                };
-                send_future(self.link.clone(), future);
+                use yew_router::agent::{RouteAgentDispatcher, RouteRequest};
+                let mut dispatcher = RouteAgentDispatcher::<()>::new();
+                dispatcher.send(RouteRequest::ChangeRoute(Route::from(AppRoute::Search(
+                    searchquery,
+                ))));
                 true
             }
 
@@ -85,17 +87,6 @@ impl Component for App {
                 false
             }
 
-            Msg::SearchResult(extractor) => {
-                self.is_loading_search = false;
-                match extractor {
-                    Some(extractor) => {
-                        self.search_result = Some(extractor);
-                        true
-                    }
-                    None => true,
-                }
-            }
-
             Msg::ToggleNavMenu => {
                 self.show_nav_menu = !self.show_nav_menu;
                 true
@@ -117,6 +108,8 @@ impl Component for App {
                     }
                 };
                 send_future(self.link.clone(), future);
+                
+
                 false
             }
 
@@ -223,18 +216,21 @@ impl Component for App {
             </div>
             <section class="section">
               <div class="container">
-                 {
-                    if let Some(extractor)=&self.search_result{
-                        html!{
-                            <SearchResult key=extractor.0.clone() query=extractor.0.clone() extractor=extractor.1.clone() />
-                        }
-                    }else{
-                        html!{
-                            <div>
+
+                 <Router<AppRoute, ()>
+                    render = Router::render(|switch: AppRoute| {
+                      match switch{
+                        AppRoute::Home => html!{},
+                        AppRoute::Search(query) =>{
+                          log::info!("query : {}",query);
+                          html!{
+                            <div key=query.clone()>
+                              <SearchResult key=query.clone() query=query.clone()/>
                             </div>
-                        }
-                    }
-                 }
+                        } }
+                      }
+                    })
+                 />
               </div>
             </section>
           </>

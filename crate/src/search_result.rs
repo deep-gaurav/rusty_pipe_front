@@ -1,5 +1,7 @@
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 use yew::prelude::*;
+use super::downloader::{send_future, DownloaderExample};
+
 use yew::{Component, ComponentLink, Html};
 
 pub struct SearchResult {
@@ -12,7 +14,7 @@ pub struct SearchResult {
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct Props {
-    pub extractor: YTSearchExtractor,
+    // pub extractor: YTSearchExtractor,
     pub query: String,
 }
 
@@ -27,11 +29,22 @@ impl Component for SearchResult {
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let query = props.query.clone();
+        let future = async move {
+            let ytex = YTSearchExtractor::new(DownloaderExample, &query, None).await;
+            let ytex = ytex.ok();
+            if let Some(ytex) = ytex {
+                Msg::Loaded(ytex)
+            } else {
+                Msg::LoadFail
+            }
+        };
+        send_future(link.clone(), future);
         Self {
             link,
             props,
             next_page_extractors: vec![],
-            is_loading: false,
+            is_loading: true,
             last_reached: false,
         }
     }
@@ -53,10 +66,7 @@ impl Component for SearchResult {
                     false
                 } else {
                     self.is_loading = true;
-                    let extractor = self
-                        .next_page_extractors
-                        .last()
-                        .unwrap_or(&self.props.extractor);
+                    let extractor = self.next_page_extractors.last().unwrap();
                     let next_page_url = extractor.get_next_page_url();
                     match next_page_url {
                         Ok(next_page_url) => match next_page_url {
@@ -95,31 +105,52 @@ impl Component for SearchResult {
     }
 
     fn change(&mut self, _props: Self::Properties) -> bool {
-        false
+        log::info!("change : {:#?}", _props.query);
+        if self.props.query!=_props.query{
+            self.is_loading=true;
+            self.next_page_extractors.clear();
+            self.props=_props.clone();
+
+            let query = _props.query.clone();
+            let future = async move {
+                let ytex = YTSearchExtractor::new(DownloaderExample, &query, None).await;
+                let ytex = ytex.ok();
+                if let Some(ytex) = ytex {
+                    Msg::Loaded(ytex)
+                } else {
+                    Msg::LoadFail
+                }
+            };
+            send_future(self.link.clone(), future);
+            true
+
+        }
+        else{
+            false
+        }
     }
 
     fn view(&self) -> Html {
         let cardwidth = 320_f64;
-        let results = self.props.extractor.search_results();
-        match results {
-            Ok(mut results) => {
-                for page in self.next_page_extractors.iter() {
-                    if let Ok(mut page_result) = page.search_results() {
-                        results.append(&mut page_result);
-                    }
+        let mut results = vec![];
+        {
+            for page in self.next_page_extractors.iter() {
+                if let Ok(mut page_result) = page.search_results() {
+                    results.append(&mut page_result);
                 }
+            }
 
-                let window_width = yew::utils::window()
-                    .inner_width()
-                    .expect("Cant get window width")
-                    .as_f64()
-                    .expect("window width not number");
+            let window_width = yew::utils::window()
+                .inner_width()
+                .expect("Cant get window width")
+                .as_f64()
+                .expect("window width not number");
 
-                let cardscolumn = (window_width / cardwidth).floor() as usize;
+            let cardscolumn = (window_width / cardwidth).floor() as usize;
 
-                let mut rows = vec![];
+            let mut rows = vec![];
 
-                let mut m=results.iter().map(|result|{
+            let mut m=results.iter().map(|result|{
                     use rusty_pipe::youtube_extractor::search_extractor::YTSearchItem;
 
                     match result{
@@ -226,59 +257,43 @@ impl Component for SearchResult {
                     }
                 });
 
-                for _i in 0..(m.len() / cardscolumn) {
-                    let mut row = vec![];
-                    for _j in 0..cardscolumn {
-                        if let Some(item) = m.next() {
-                            row.push(item.clone());
-                        }
+            for _i in 0..(m.len() / cardscolumn) {
+                let mut row = vec![];
+                for _j in 0..cardscolumn {
+                    if let Some(item) = m.next() {
+                        row.push(item.clone());
                     }
-                    // let row = row.iter().map(|c|html!{<>{c}</>});
-                    rows.push(html! {
+                }
+                // let row = row.iter().map(|c|html!{<>{c}</>});
+                rows.push(html! {
 
-                        <div class="tile is-ancestor">
-                            <div class="tile is-parent">
-                                {for row}
-                            </div>
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent">
+                            {for row}
                         </div>
-                    });
-                }
-
-                html! {
-                    <>
-                    {for rows}
-                    {
-                        if !self.last_reached{
-                            html!{
-                                <button onclick=self.link.callback(|_|Msg::LoadNext) class={
-                                    let mut classes = "button is-fullwidth".to_string();
-                                    if self.is_loading {
-                                      classes = format!("{} is-loading",classes);
-                                    }
-                                    classes
-                                }>{"Load More"}</button>
-                            }
-                        }else{
-                            html!{}
-                        }
-                    }
-                    </>
-                }
+                    </div>
+                });
             }
-            Err(err) => {
-                html! {
-                    <article class="message is-danger">
-                        <div class="message-header">
-                            <p>{"Error"}</p>
-                            <button class="delete" aria-label="delete"></button>
-                        </div>
-                        <div class="message-body">
-                           {
-                               format!("{:#?}",err)
-                           }
-                        </div>
-                    </article>
+
+            html! {
+                <>
+                {for rows}
+                {
+                    if !self.last_reached{
+                        html!{
+                            <button onclick=self.link.callback(|_|Msg::LoadNext) class={
+                                let mut classes = "button is-fullwidth".to_string();
+                                if self.is_loading {
+                                  classes = format!("{} is-loading",classes);
+                                }
+                                classes
+                            }>{"Load More"}</button>
+                        }
+                    }else{
+                        html!{}
+                    }
                 }
+                </>
             }
         }
     }
