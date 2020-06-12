@@ -1,27 +1,33 @@
 #!/usr/bin/env bash
 
-set -e
-
-shopt -s dotglob
-
-mkdir target
-
-if [ -d .cache ]; then
-   mv .cache/* target/
+if [ -f prebuild/index.html ]; then
+   mkdir dist
+   cp prebuild/* dist/*
 fi
+if [ ! -f prebuild/index.html]; then
+   set -e
+
+   shopt -s dotglob
+
+   mkdir target
+
+   if [ -d .cache ]; then
+      mv .cache/* target/
+   fi
 
 
 
-curl https://sh.rustup.rs -sSf | sh -s - --default-toolchain stable -y
-source ~/.cargo/env
+   curl https://sh.rustup.rs -sSf | sh -s - --default-toolchain stable -y
+   source ~/.cargo/env
 
-cargo install wasm-pack
+   cargo install wasm-pack
 
-npm run build
+   npm run build
 
-ls -l dist/
+   ls -l dist/
 
-if [ ! -d .cache ]; then
-   mkdir .cache
+   if [ ! -d .cache ]; then
+      mkdir .cache
+   fi
+   mv target/* .cache/
 fi
-mv target/* .cache/
