@@ -2,8 +2,7 @@
     "version": 2,
     "routes": [
       { "handle": "filesystem" },
-      { "src": "/api/(.*)", "dest": "/api/cors/[cors].js"},
-      { "src": "/proxy/(.*)", "dest": "$1"},
+      { "src": "/api/cors/(?<id>[^/]+)", "dest": "/api/cors/[cors].js?query=$id"},
       { "src": "/.*", "dest": "/index.html" }
     ]
   }
