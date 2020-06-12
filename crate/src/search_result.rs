@@ -125,7 +125,7 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
                                 <div class="card-image">
                                     <figure class="image is-4by2">
                                     <img src=thumburl alt="Playlist Thumbnail"/>
-                                    <div class="container level" style="position:absolute;right:0px;bottom:0px;width:50%;height:100%;background-color:#808080c3;">
+                                    <div class="container level is-mobile" style="position:absolute;right:0px;bottom:0px;width:50%;height:100%;background-color:#808080c3;">
                                         <div style="width:100%" class="has-text-centered has-text-light">
                                             <span class="icon is-large">
                                                 <i class="fas fa-2x fa-play"></i>
