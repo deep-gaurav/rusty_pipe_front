@@ -3,7 +3,7 @@
     "routes": [
       { "handle": "filesystem" },
       { "src": "/api/(.*)", "dest": "/api/cors/[cors].js"},
-      { "src": "/proxy/(.*)", "dest": "https://$1"},
+      { "src": "/proxy/(.*)", "dest": "$1"},
       { "src": "/.*", "dest": "/index.html" }
     ]
   }
