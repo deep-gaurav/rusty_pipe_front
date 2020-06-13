@@ -19,7 +19,7 @@ const handler = (req, res) => {
     const {
       query: { cors }
     } = req;
-    var uri = Buffer.from(cors, 'base64').toString('ascii');
+    var uri = Buffer.from(decodeURIComponent(cors), 'base64').toString('ascii');
 
     var header = {};
     if(req.headers["x-youtube-client-name"]){

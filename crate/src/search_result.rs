@@ -4,6 +4,7 @@ use rusty_pipe::youtube_extractor::search_extractor::YTSearchItem;
 use yew::prelude::*;
 
 use yew::{Component, ComponentLink, Html};
+use super::route_comp::RouteComponent;
 
 pub struct SearchResult {
     link: ComponentLink<Self>,
@@ -26,6 +27,8 @@ pub enum Msg {
 }
 
 pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
+
+    use super::app::{AppRoute,go_to_route};
     {
         let window_width = yew::utils::window()
             .inner_width()
@@ -65,8 +68,13 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
                             avatar = String::from(&thumb.url);
                         }
 
+                        let video_id = streaminfo.video_id().unwrap_or_default();
+
+                        let approute = yew_router::route::Route::from(super::app::AppRoute::Video(video_id));
+
                         html!{
                             <div class="tile is-child " style="padding:10px">
+                            <RouteComponent route=approute>
                             <div class="card" style="height:100%">
                                 <div class="card-image">
                                     <figure class="image is-4by2">
@@ -101,6 +109,7 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
                                     </div>
                                 </div>
                                 </div>
+                                </RouteComponent>
                                 </div>
                         }
                     }

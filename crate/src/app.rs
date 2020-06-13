@@ -3,6 +3,7 @@ use yew_router::prelude::*;
 
 use super::search_result::SearchResult;
 use super::trending::Trending;
+use super::video::Video;
 use crate::downloader::{send_future, DownloaderExample};
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 
@@ -28,8 +29,16 @@ pub enum Msg {
 pub enum AppRoute {
     #[to = "/search/{query}"]
     Search(String),
+    #[to = "/video/{videoid}"]
+    Video(String),
     #[to = "/"]
     Home,
+}
+
+pub fn go_to_route(route:Route){
+  use yew_router::agent::{RouteAgentDispatcher, RouteRequest};
+  let mut dispatcher = RouteAgentDispatcher::<()>::new();
+  dispatcher.send(RouteRequest::ChangeRoute(route));
 }
 
 impl Component for App {
@@ -219,17 +228,35 @@ impl Component for App {
 
                  <Router<AppRoute, ()>
                     render = Router::render(|switch: AppRoute| {
-                      match switch{
-                        AppRoute::Home => html!{
-                          <Trending />
-                        },
-                        AppRoute::Search(query) =>{
-                          log::info!("query : {}",query);
-                          html!{
-                            <div key=query.clone()>
-                              <SearchResult key=query.clone() query=query.clone()/>
-                            </div>
-                        } }
+                      html!{
+                        <>
+                        {
+                          if let AppRoute::Video(videoId)=&switch{
+                            html!{
+                              <Video video_id=videoId.clone()/>
+                            }
+                          }else{
+                            html!{
+                              <Video />
+                            }
+                          }
+                        }
+                        {
+                          match switch{
+                            AppRoute::Home => html!{
+                              <Trending />
+                            },
+                            AppRoute::Search(query) =>{
+                              log::info!("query : {}",query);
+                              html!{
+                                <div key=query.clone()>
+                                  <SearchResult key=query.clone() query=query.clone()/>
+                                </div>
+                            } }
+                            AppRoute::Video(_)=>html!{}
+                          }
+                        }
+                        </>
                       }
                     })
                  />

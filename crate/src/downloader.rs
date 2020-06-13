@@ -8,6 +8,7 @@ use wasm_bindgen_futures::spawn_local;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, RequestMode, Response, Window};
 use yew::{Component, ComponentLink};
+use wasm_bindgen::prelude::{*};
 // use http::Response;
 
 pub fn send_future<COMP: Component, F>(link: ComponentLink<COMP>, future: F)
@@ -19,13 +20,20 @@ where
     });
 }
 
+#[wasm_bindgen]
+extern "C" {
+
+    fn encodeURIComponent(uri:&str)->String;
+}
+
+
 pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String, ParsingError> {
     let mut opts = RequestInit::new();
     opts.method("GET");
     opts.mode(RequestMode::Cors);
 
     let urlencoded = base64::encode(url);
-    let url = format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded);
+    let url = encodeURIComponent(&format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded));
 
     let request = Request::new_with_str_and_init(&url, &opts)
         .map_err(|e| ParsingError::from(format!("{:#?}", e)))?;
