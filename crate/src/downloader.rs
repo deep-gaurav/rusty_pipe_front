@@ -32,8 +32,8 @@ pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String
     opts.method("GET");
     opts.mode(RequestMode::Cors);
 
-    let urlencoded = base64::encode(url);
-    let url = encodeURIComponent(&format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded));
+    let urlencoded = encodeURIComponent(& base64::encode(url));
+    let url = (&format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded));
 
     let request = Request::new_with_str_and_init(&url, &opts)
         .map_err(|e| ParsingError::from(format!("{:#?}", e)))?;
@@ -62,6 +62,7 @@ pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String
     Ok(text.as_string().unwrap())
 }
 
+#[derive(Clone)]
 pub struct DownloaderExample;
 
 #[async_trait(?Send)]

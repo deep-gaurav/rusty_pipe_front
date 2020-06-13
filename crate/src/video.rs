@@ -7,6 +7,8 @@ use rusty_pipe::youtube_extractor::trending_extractor::YTTrendingExtractor;
 use rusty_pipe::youtube_extractor::stream_extractor::YTStreamExtractor;
 use yew::prelude::*;
 
+use super::video_player::VideoPlayer;
+
 
 pub struct Video{
     link:ComponentLink<Self>,
@@ -68,11 +70,30 @@ impl Component for Video{
     fn change(&mut self,_props: Self::Properties)->ShouldRender{
         if _props!=self.props{
             log::info!("video props change : {:#?}",_props);
-            // let videoinfo = _props.video_id.clone().map(|vidid|Self::load_video(vidid));
+            self.props=_props;
 
-            // self.props=_props;
+            if let Some(id) = self.props.video_id.clone(){
+                match &self.videoinfo{
+                    Some(vidinfo)=>{
+                        if vidinfo.videoId!=id{
+                            self.videoinfo=Some(Self::load_video(id, self.link.clone()));
+                            true
+                        }else{
+                            false
+                        }
+                    }
+                    None=>{
+                        self.videoinfo=Some(Self::load_video(id, self.link.clone()));
+                        true
+                    }
+                }
+            }else{
+                true
+            }
         }
-        false
+        else{
+            false
+        }
     }
 
     fn update(&mut self,msg: Self::Message)->ShouldRender{
@@ -95,10 +116,38 @@ impl Component for Video{
             Some(video)=>{
                 match &video.extractor{
                     Some(extractor)=>{
-                        html!{
-                            html!{
-                                "extractor"
+                        match extractor{
+                            Ok(extractor)=>{
+                                let name = extractor.get_name().unwrap_or_default();
+
+                                html!{
+                                    <div>
+                                        <VideoPlayer fullpage=self.props.video_id.is_some() key={"videoplayer".to_string()} extractor=extractor.clone() />
+                                        {
+                                            if let Some(_id)= &self.props.video_id{
+                                                html!{
+                                                    <div>{name}</div>
+                                                }
+                                            }else{
+                                                html!{
+
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                }
                             }
+                            Err(err) => html! {
+
+                                <article class="message is-danger">
+                                <div class="message-header">
+                                  <p>{"Error"}</p>
+                                </div>
+                                <div class="message-body">
+                                  {format!("{:#?}",err)}
+                                </div>
+                              </article>
+                            },
                         }
                     }
                     None=>{

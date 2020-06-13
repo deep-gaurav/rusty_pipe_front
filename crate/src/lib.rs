@@ -28,6 +28,7 @@ mod search_result;
 mod trending;
 mod video;
 mod route_comp;
+mod video_player;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the
