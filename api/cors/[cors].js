@@ -45,6 +45,12 @@ const handler = (req, res) => {
         // for(head in resp.headers){
         //   res.setHeader(head,resp.headers[head]);
         // }
+        var copyheaders = ["Content-Length","Content-Type","Content-Range"]
+        for(head of copyheaders){
+          if(resp.headers[head]){
+            res.setHeader(head,resp[head])
+          }
+        }
         res.send(data);
       });
     }).on("error", (err) => {
