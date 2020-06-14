@@ -66,7 +66,7 @@ const handler = (req, res) => {
     if(header["range"]){
       if(header["range"].endsWith("-")){
         var r = header["range"];
-        r = r+ (parseInt(r.split("=")[1].split("-")[0])+4000).toString();
+        r = r+ (parseInt(r.split("=")[1].split("-")[0])+400000).toString();
         header["range"]=r;
       }
     }
