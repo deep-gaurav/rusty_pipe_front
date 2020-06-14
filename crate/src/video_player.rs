@@ -53,7 +53,7 @@ impl Component for VideoPlayer{
 
         let thumburl = thumbs.first().map(|t|t.url.as_str()).unwrap_or_default();
 
-        let video_streams = self.props.extractor.get_video_stream().unwrap_or_default();
+        let video_streams = self.props.extractor.get_video_only_stream().unwrap_or_default();
         let video_sources = video_streams.iter().map(
             |vid|{
                 let url = vid.url.clone().unwrap_or_default();
