@@ -117,8 +117,9 @@ impl Downloader for DownloaderExample {
 
     fn eval_js(_script: &str) -> Result<String, String> {
         // println!("js result : {:?}", result);
+        log::info!("js eval {}",_script);
         let result = eval(_script);
-        print!("JS result: {}", result);
+        log::info!("JS result: {}", result);
         Ok(result)
     }
 }

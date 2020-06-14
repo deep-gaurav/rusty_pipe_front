@@ -57,6 +57,7 @@ const handler = (req, res) => {
             res.setHeader(head,resp.headers[head])
           }
         }
+        console.log(resp.headers);
 
         res.send(data);
       });
