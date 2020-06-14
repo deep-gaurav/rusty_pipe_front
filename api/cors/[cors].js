@@ -34,36 +34,43 @@ const handler = (req, res) => {
 
     const https = require('https');
     var options = {
+        url: uri,
         headers : header
     }
-    https.get(uri, options, (resp) => {
-      let data = '';
-      var copyheaders = ["Content-Length","Content-Type","Content-Range"]
 
-      resp.on('data', (chunk) => {
-        for(head of copyheaders){
-          if(resp.headers[head]){
-            res.setHeader(head,resp.headers[head])
-          }
-        }
-        data += chunk;
-      });
-      resp.on('end', () => {
-        // for(head in resp.headers){
-        //   res.setHeader(head,resp.headers[head]);
-        // }
-        for(head of copyheaders){
-          if(resp.headers[head]){
-            res.setHeader(head,resp.headers[head])
-          }
-        }
-        console.log(resp.headers);
+    https.request(options,(err,resp,body)=>{
+      console.log(resp);
+      res.send(body);
+    })
 
-        res.send(data);
-      });
-    }).on("error", (err) => {
-      res.send(err.message)
-    });
+    // https.get(uri, options, (resp) => {
+    //   let data = '';
+    //   var copyheaders = ["Content-Length","Content-Type","Content-Range"]
+
+    //   resp.on('data', (chunk) => {
+    //     for(head of copyheaders){
+    //       if(resp.headers[head]){
+    //         res.setHeader(head,resp.headers[head])
+    //       }
+    //     }
+    //     data += chunk;
+    //   });
+    //   resp.on('end', () => {
+    //     // for(head in resp.headers){
+    //     //   res.setHeader(head,resp.headers[head]);
+    //     // }
+    //     for(head of copyheaders){
+    //       if(resp.headers[head]){
+    //         res.setHeader(head,resp.headers[head])
+    //       }
+    //     }
+    //     console.log(resp.headers);
+
+    //     res.send(data);
+    //   });
+    // }).on("error", (err) => {
+    //   res.send(err.message)
+    // });
   }
 
   module.exports = allowCors(handler)
