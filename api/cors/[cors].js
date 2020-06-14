@@ -34,7 +34,7 @@ function request(uri,options,res){
       var hd = resp.headers[headd];
       console.log("hd is "+hd);
       if(hd && hd!="none"){
-        console.log("set header "+head+" to "+hd);
+        console.log("set header "+headd+" to "+hd);
         res.setHeader(headd,hd);
       }
     }
