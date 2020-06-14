@@ -28,6 +28,14 @@ function request(uri,options,res){
     console.log('headers:', resp.headers);
     let data = '';
 
+    var cpheads = ['content-range','accept-ranges','content-length','content-type','x-content-type-options','alt-svc'];
+
+    for(headd of cpheads){
+      if(resp.headers[headd]){
+        res.setHeader(headd)=resp.headers[headers];
+      }
+    }
+
     if(resp.statusCode > 300 && resp.statusCode < 400 && resp.headers.location){
       if (url.parse(resp.headers.location).hostname) {
         uri = resp.headers.location;
@@ -40,6 +48,8 @@ function request(uri,options,res){
         data += chunk;
       });
       resp.on('end', () => {
+        console.log("responding headers");
+        console.log(res.headers);
         res.send(data);
       });
     }
