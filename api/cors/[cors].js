@@ -42,6 +42,9 @@ const handler = (req, res) => {
         data += chunk;
       });
       resp.on('end', () => {
+        for(head in resp.headers){
+          res.setHeader(head,resp.headers[head]);
+        }
         res.send(data);
       });
     }).on("error", (err) => {
