@@ -32,7 +32,8 @@ function request(uri,options,res){
 
     for(headd of cpheads){
       if(resp.headers[headd]){
-        res.setHeader(headd)=resp.headers[headers];
+        console.log("set header "+head+"to "+resp.headers[headd]);
+        res.setHeader(headd)=resp.headers[headd];
       }
     }
 
