@@ -31,7 +31,8 @@ function request(uri,options,res){
     var cpheads = ['content-range','accept-ranges','content-length','content-type','x-content-type-options','alt-svc'];
 
     for(headd of cpheads){
-      var hd = resp[headd];
+      var hd = resp.headers[headd];
+      console.log("hd is "+hd);
       if(hd){
         console.log("set header "+head+" to "+hd);
         res.setHeader(headd)=hd;
