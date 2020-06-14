@@ -41,8 +41,9 @@ const handler = (req, res) => {
       resp.on('data', (chunk) => {
         var copyheaders = ["Content-Length","Content-Type","Content-Range"]
         for(head of copyheaders){
-          res.setHeader(head,resp[head])
-          
+          if(resp.headers[head]){
+            res.setHeader(head,resp.headers[head])
+          }
         }
         data += chunk;
       });
