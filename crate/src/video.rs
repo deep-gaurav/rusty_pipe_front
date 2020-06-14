@@ -79,7 +79,7 @@ impl Component for Video{
                             self.videoinfo=Some(Self::load_video(id, self.link.clone()));
                             true
                         }else{
-                            false
+                            true
                         }
                     }
                     None=>{

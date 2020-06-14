@@ -23,7 +23,10 @@ where
 #[wasm_bindgen]
 extern "C" {
 
-    fn encodeURIComponent(uri:&str)->String;
+    pub fn encodeURIComponent(uri:&str)->String;
+
+    fn eval(code:&str)->String;
+
 }
 
 
@@ -114,7 +117,7 @@ impl Downloader for DownloaderExample {
 
     fn eval_js(_script: &str) -> Result<String, String> {
         // println!("js result : {:?}", result);
-        let result = "".to_owned();
+        let result = eval(_script);
         print!("JS result: {}", result);
         Ok(result)
     }

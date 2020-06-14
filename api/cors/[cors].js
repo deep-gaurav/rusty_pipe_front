@@ -28,7 +28,9 @@ const handler = (req, res) => {
     if(req.headers["x-youtube-client-version"]){
         header["x-youtube-client-version"]=req.headers["x-youtube-client-version"];
     }
-
+    if(req.headers["Range"]){
+      header["Range"]=req.headers["Range"];
+  }
 
     const https = require('https');
     var options = {
