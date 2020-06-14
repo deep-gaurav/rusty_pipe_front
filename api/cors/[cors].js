@@ -57,15 +57,21 @@ const handler = (req, res) => {
     var uri = Buffer.from(decodeURIComponent(cors), 'base64').toString('ascii');
 
     var header = {};
-    if(req.headers["x-youtube-client-name"]){
-        header["x-youtube-client-name"]=req.headers["x-youtube-client-name"];
+    var cphead = ["x-youtube-client-name","x-youtube-client-version","range"];
+    for(head of cphead){
+      if(req.headers[head]){
+        header[head]=req.headers[head]
+      }
     }
-    if(req.headers["x-youtube-client-version"]){
-        header["x-youtube-client-version"]=req.headers["x-youtube-client-version"];
-    }
-    if(req.headers["Range"]){
-      header["Range"]=req.headers["Range"];
-    }
+    // if(req.headers["x-youtube-client-name"]){
+    //     header["x-youtube-client-name"]=req.headers["x-youtube-client-name"];
+    // }
+    // if(req.headers["x-youtube-client-version"]){
+    //     header["x-youtube-client-version"]=req.headers["x-youtube-client-version"];
+    // }
+    // if(req.headers["range"]){
+    //   header["range"]=req.headers["range"];
+    // }
 
     const https = require('https');
     var options = {
