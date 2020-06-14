@@ -30,7 +30,7 @@ const handler = (req, res) => {
     }
     if(req.headers["Range"]){
       header["Range"]=req.headers["Range"];
-  }
+    }
 
     const https = require('https');
     var options = {
@@ -39,18 +39,18 @@ const handler = (req, res) => {
     https.get(uri, options, (resp) => {
       let data = '';
       resp.on('data', (chunk) => {
+        var copyheaders = ["Content-Length","Content-Type","Content-Range"]
+        for(head of copyheaders){
+          res.setHeader(head,resp[head])
+          
+        }
         data += chunk;
       });
       resp.on('end', () => {
         // for(head in resp.headers){
         //   res.setHeader(head,resp.headers[head]);
         // }
-        var copyheaders = ["Content-Length","Content-Type","Content-Range"]
-        for(head of copyheaders){
-          if(resp.headers[head]){
-            res.setHeader(head,resp[head])
-          }
-        }
+
         res.send(data);
       });
     }).on("error", (err) => {
