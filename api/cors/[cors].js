@@ -38,8 +38,9 @@ const handler = (req, res) => {
     }
     https.get(uri, options, (resp) => {
       let data = '';
+      var copyheaders = ["Content-Length","Content-Type","Content-Range"]
+
       resp.on('data', (chunk) => {
-        var copyheaders = ["Content-Length","Content-Type","Content-Range"]
         for(head of copyheaders){
           if(resp.headers[head]){
             res.setHeader(head,resp.headers[head])
