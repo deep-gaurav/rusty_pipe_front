@@ -63,6 +63,13 @@ const handler = (req, res) => {
         header[head]=req.headers[head]
       }
     }
+    if(header["range"]){
+      if(header["range"].endsWith("-")){
+        var r = header["range"];
+        r = r+ (parseInt(r.split("=")[1].split("-")[0])+1000).toString();
+        header["range"]=r;
+      }
+    }
     // if(req.headers["x-youtube-client-name"]){
     //     header["x-youtube-client-name"]=req.headers["x-youtube-client-name"];
     // }
