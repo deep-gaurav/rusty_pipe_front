@@ -40,10 +40,39 @@ const handler = (req, res) => {
 
     console.log(options);
 
-    https.request(options,(err,resp,body)=>{
-      console.log(resp);
-      res.send(body);
-    })
+    var reqp = https.request(options,(resp)=>{
+      console.log('statusCode:', resp.statusCode);
+      console.log('headers:', resp.headers);
+      let data = '';
+      
+      resp.on('data', (chunk) => {
+        // for(head of copyheaders){
+        //   if(resp.headers[head]){
+        //     res.setHeader(head,resp.headers[head])
+        //   }
+        // }
+        data += chunk;
+      });
+      resp.on('end', () => {
+        // for(head in resp.headers){
+        //   res.setHeader(head,resp.headers[head]);
+        // }
+        // for(head of copyheaders){
+        //   if(resp.headers[head]){
+        //     res.setHeader(head,resp.headers[head])
+        //   }
+        // }
+        // console.log(resp.headers);
+
+        res.send(data);
+      });
+
+    });
+
+    reqp.on('error', (err) => {
+      res.send(err.message)
+    });
+    reqp.end();
 
     // https.get(uri, options, (resp) => {
     //   let data = '';
