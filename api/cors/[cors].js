@@ -33,7 +33,7 @@ function request(uri,options,res){
     for(headd of cpheads){
       var hd = resp.headers[headd];
       console.log("hd is "+hd);
-      if(hd){
+      if(hd && hd!="none"){
         console.log("set header "+head+" to "+hd);
         res.setHeader(headd)=hd;
       }
