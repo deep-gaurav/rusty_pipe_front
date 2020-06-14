@@ -15,6 +15,35 @@ const allowCors = fn => async (req, res) => {
   return await fn(req, res)
 }
 
+
+function request(uri,options,res){
+  let req = https.request(uri,options,(resp)=>{
+    console.log('statusCode:', resp.statusCode);
+    console.log('headers:', resp.headers);
+    let data = '';
+
+    if(resp.statusCode > 300 && resp.statusCode < 400 && resp.headers.location){
+      if (url.parse(resp.headers.location).hostname) {
+        uri = resp.headers.location;
+      } else {
+        uri = "https://"+url.parse(uri).host+resp.headers.location;
+      }
+      request(uri,options,res);
+    }else{
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+      resp.on('end', () => {
+        res.send(data);
+      });
+    }
+
+
+  });
+
+  req.end();
+}
+
 const handler = (req, res) => {
     const {
       query: { cors }
@@ -39,39 +68,7 @@ const handler = (req, res) => {
 
     console.log(options);
 
-    var reqp = https.request(uri,options,(resp)=>{
-      console.log('statusCode:', resp.statusCode);
-      console.log('headers:', resp.headers);
-      let data = '';
-      
-      resp.on('data', (chunk) => {
-        // for(head of copyheaders){
-        //   if(resp.headers[head]){
-        //     res.setHeader(head,resp.headers[head])
-        //   }
-        // }
-        data += chunk;
-      });
-      resp.on('end', () => {
-        // for(head in resp.headers){
-        //   res.setHeader(head,resp.headers[head]);
-        // }
-        // for(head of copyheaders){
-        //   if(resp.headers[head]){
-        //     res.setHeader(head,resp.headers[head])
-        //   }
-        // }
-        // console.log(resp.headers);
-
-        res.send(data);
-      });
-
-    });
-
-    reqp.on('error', (err) => {
-      res.send(err.message)
-    });
-    reqp.end();
+    request(uri,options,res);
 
     // https.get(uri, options, (resp) => {
     //   let data = '';
