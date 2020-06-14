@@ -17,6 +17,9 @@ const allowCors = fn => async (req, res) => {
 
 
 function request(uri,options,res){
+  const https = require('https');
+  const url = require("url");
+
   let req = https.request(uri,options,(resp)=>{
     console.log('statusCode:', resp.statusCode);
     console.log('headers:', resp.headers);
