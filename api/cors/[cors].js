@@ -51,6 +51,11 @@ const handler = (req, res) => {
         // for(head in resp.headers){
         //   res.setHeader(head,resp.headers[head]);
         // }
+        for(head of copyheaders){
+          if(resp.headers[head]){
+            res.setHeader(head,resp.headers[head])
+          }
+        }
 
         res.send(data);
       });
