@@ -34,13 +34,12 @@ const handler = (req, res) => {
 
     const https = require('https');
     var options = {
-        url: uri,
         headers : header
     }
 
     console.log(options);
 
-    var reqp = https.request(options,(resp)=>{
+    var reqp = https.request(url,options,(resp)=>{
       console.log('statusCode:', resp.statusCode);
       console.log('headers:', resp.headers);
       let data = '';
