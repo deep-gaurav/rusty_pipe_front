@@ -38,6 +38,8 @@ const handler = (req, res) => {
         headers : header
     }
 
+    console.log(options);
+
     https.request(options,(err,resp,body)=>{
       console.log(resp);
       res.send(body);
