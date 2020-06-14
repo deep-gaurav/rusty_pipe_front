@@ -39,7 +39,7 @@ const handler = (req, res) => {
 
     console.log(options);
 
-    var reqp = https.request(url,options,(resp)=>{
+    var reqp = https.request(uri,options,(resp)=>{
       console.log('statusCode:', resp.statusCode);
       console.log('headers:', resp.headers);
       let data = '';
