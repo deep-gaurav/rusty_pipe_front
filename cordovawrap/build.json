@@ -1,6 +1,14 @@
 {
     "electron": {
-        "linux": {},
-        "windows": {}
+        "linux": {
+            "package":[
+                "AppImage"
+            ]
+        },
+        "windows": {
+            "package":[
+                "portable"
+            ]
+        }
     }
 }
