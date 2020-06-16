@@ -8,9 +8,7 @@ INSTALL_NODE_VIA_NVM: &INSTALL_NODE_VIA_NVM
     nvm install lts/carbon
 
 
-cache:
-  directories:
-    - /home/travis/.cargo
+cache: cargo
 
 matrix:
   include:
@@ -25,10 +23,4 @@ matrix:
     - cargo install wasm-pack
     - npm install
     - npm run build
-    - cd cordovawrap
-    - cordova platform add electron
-    - rm www/*
-    - cp dist/* www/
-    - rm www/index.html
-    - cp fixes/index.html www/index.html
-    - cordova build electron --release
+    - bash build_and_fixcordova.sh
