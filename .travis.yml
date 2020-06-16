@@ -23,7 +23,7 @@ matrix:
       - npm install -g cordova
       - cargo install wasm-pack
       - npm install
-      - sudo apt install wine
+      - sudo apt install wine-stable
       - sudo apt install --no-install-recommends -y libopenjp2-tools
     script:
     - npm run build
