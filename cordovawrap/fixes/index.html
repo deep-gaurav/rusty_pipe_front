@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bulma.min.15b47ecc.css">
+    <script defer src="font_awesome.98cfba52.js"></script>
+    <title>Rusty Pipe Front</title>
+</head>
+
+<body> 
+
+
+    <script>
+        window.wfetch = (url, info) => {
+          return new Promise(function(resolve, reject) {
+            let xhr = new XMLHttpRequest();
+            xhr.open((info && info.method) || "GET", url);
+            if (url.endsWith(".wasm")) xhr.responseType = "arraybuffer";
+    
+            xhr.onload = function() {
+              if (this.status >= 200 && this.status < 300) {
+                resolve({
+                  json: () => JSON.parse(xhr.response),
+                  ok: true,
+                  arrayBuffer: () => xhr.response
+                });
+              } else {
+                reject({
+                  status: this.status,
+                  statusText: xhr.statusText
+                });
+              }
+            };
+            xhr.onerror = function() {
+              reject({
+                status: this.status,
+                statusText: xhr.statusText
+              });
+            };
+            xhr.send();
+          });
+        };
+        WebAssembly.instantiateStreaming = undefined;
+    </script>
+    <script src="app.25972337.js"></script>
+
+</body>
+
+</html>

@@ -20,7 +20,15 @@ matrix:
     rust: stable
     install:
       - *INSTALL_NODE_VIA_NVM
+      - npm install -g cordova
     script:
     - cargo install wasm-pack
     - npm install
     - npm run build
+    - cd cordovawrap
+    - cordova platform add electron
+    - rm www/*
+    - cp dist/* www/
+    - rm www/index.html
+    - cp fixes/index.html www/index.html
+    - cordova build electron --release
