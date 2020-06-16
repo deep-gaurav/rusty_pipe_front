@@ -27,9 +27,9 @@ before_deploy:
   - git tag $TRAVIS_TAG
 deploy:
   provider: releases
-  api_key: $GH_TOKEN
+  api_key: $GITHUB_TOKEN
   file_glob: true
-  file: platforms/electron/build/RustyPipe*
+  file: deploys/*
   skip_cleanup: true
 
 matrix:
