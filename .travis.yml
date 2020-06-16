@@ -16,6 +16,7 @@ addons:
   apt:
     packages:
     - wine-stable
+    - wine32
     # - xvfb
 
 matrix:
