@@ -1,6 +1,6 @@
 language: rust
 sudo: required
-dist: xenial
+dist: bionic
 
 INSTALL_NODE_VIA_NVM: &INSTALL_NODE_VIA_NVM
   |
@@ -15,8 +15,8 @@ cache: cargo
 addons:
   apt:
     packages:
-    - wine
-    - xvfb
+    - wine-stable
+    # - xvfb
 
 matrix:
   include:
