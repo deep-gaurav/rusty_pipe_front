@@ -1,6 +1,7 @@
 set -x
 cd cordovawrap
-cordova platform add electron
+echo pwd
+cordova platform add electron --verbose
 rm www/*
 cp dist/* www/
 rm www/index.html
