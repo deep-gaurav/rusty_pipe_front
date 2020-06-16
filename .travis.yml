@@ -19,8 +19,8 @@ matrix:
     install:
       - *INSTALL_NODE_VIA_NVM
       - npm install -g cordova
+      - cargo install wasm-pack
+      - npm install
     script:
-    - cargo install wasm-pack
-    - npm install
     - npm run build
     - bash build_and_fixcordova.sh

@@ -1,3 +1,4 @@
+set -x
 cd cordovawrap
 cordova platform add electron
 rm www/*
