@@ -22,4 +22,5 @@ matrix:
       - *INSTALL_NODE_VIA_NVM
     script:
     - cargo install wasm-pack
+    - npm install
     - npm run build
