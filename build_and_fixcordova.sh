@@ -1,6 +1,6 @@
 set -x
 cd cordovawrap
-echo pwd
+pwd
 cordova platform add electron --verbose
 rm www/*
 cp dist/* www/
