@@ -12,6 +12,12 @@ INSTALL_NODE_VIA_NVM: &INSTALL_NODE_VIA_NVM
 
 cache: cargo
 
+addons:
+  apt:
+    packages:
+    - wine
+    - xvfb
+
 matrix:
   include:
 
@@ -23,8 +29,6 @@ matrix:
       - npm install -g cordova
       - cargo install wasm-pack
       - npm install
-      - sudo apt install wine-stable
-      - sudo apt install --no-install-recommends -y libopenjp2-tools
     script:
     - npm run build
     - bash build_and_fixcordova.sh
