@@ -6,9 +6,9 @@ let filename = 'www/index.html'
 let rawdata = fs.readFileSync(filename);
 let index = rawdata.toString();
 
-index.replaceAll("/app","app");
-index.replaceAll("/bulma","bulma");
-index.replaceAll("/font","font");
+index.replace("/app","app");
+index.replace("/bulma","bulma");
+index.replace("/font","font");
 
 console.log(index)
  
