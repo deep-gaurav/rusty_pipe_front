@@ -4,7 +4,9 @@ mkdir platforms
 mkdir plugins
 mkdir node_modules
 mkdir www
+npm install
 cordova platform add electron
+cordova --version
 rm www/*
 cp ../dist/* www/
 rm www/index.html
