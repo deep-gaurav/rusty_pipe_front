@@ -19,6 +19,19 @@ addons:
     - wine32
     # - xvfb
 
+before_deploy:
+  # Set up git user name and tag this commit
+  - git config --local user.name "Deep"
+  - git config --local user.email "deepgauravraj@gmail.com"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - git tag $TRAVIS_TAG
+deploy:
+  provider: releases
+  api_key: "98f8a038f62f7e2988d4cba35a3e4cdd16abc15f"
+  file_glob: true
+  file: platforms/electron/build/RustyPipe*
+  skip_cleanup: true
+
 matrix:
   include:
 
