@@ -1,4 +1,6 @@
 set -x
+rm -rf cordovawrap
+cordova create cordovawrap
 cd cordovawrap
 mkdir platforms
 mkdir plugins
