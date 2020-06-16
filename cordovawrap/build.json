@@ -4,11 +4,6 @@
             "package":[
                 "AppImage"
             ]
-        },
-        "windows": {
-            "package":[
-                "portable"
-            ]
         }
     }
 }
