@@ -4,7 +4,7 @@ mkdir platforms
 mkdir plugins
 mkdir node_modules
 mkdir www
-cordova platform add electron --verbose
+cordova platform add electron
 rm www/*
 cp ../dist/* www/
 rm www/index.html
