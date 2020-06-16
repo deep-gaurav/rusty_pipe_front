@@ -1,6 +1,7 @@
 set -x
 # rm -rf cordovawrap
 # cordova create cordovawrap
+export USE_HARD_LINKS=false
 cd cordovawrap
 mkdir platforms
 mkdir plugins
