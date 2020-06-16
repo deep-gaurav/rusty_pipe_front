@@ -12,10 +12,9 @@ cordova platform add electron
 cordova --version
 rm www/*
 cp ../dist/* www/
-rm www/index.html
-cp fixes/index.html www/index.html
 
 node package-fixer.js
+node index-fixer.js
 cordova build electron --release --verbose
 cd ..
 mkdir deploys
