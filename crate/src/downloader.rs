@@ -29,6 +29,11 @@ extern "C" {
 
 }
 
+pub fn is_local()->bool{
+    let href = eval("window.location.href");
+    href.starts_with("file")
+}
+
 
 pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String, ParsingError> {
     let mut opts = RequestInit::new();
@@ -36,8 +41,14 @@ pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String
     opts.mode(RequestMode::Cors);
 
     let urlencoded = encodeURIComponent(& base64::encode(url));
-    let url = (&format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded));
-
+    let url = {
+        if is_local(){
+            url.to_string()
+        }else{
+            (format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded))
+        }
+    };
+    
     let request = Request::new_with_str_and_init(&url, &opts)
         .map_err(|e| ParsingError::from(format!("{:#?}", e)))?;
 

@@ -53,22 +53,10 @@ impl Component for VideoPlayer{
 
         let thumburl = thumbs.first().map(|t|t.url.as_str()).unwrap_or_default();
 
-        let video_streams = self.props.extractor.get_video_only_stream().unwrap_or_default();
+        let video_streams = self.props.extractor.get_video_stream().unwrap_or_default();
         let video_sources = video_streams.iter().map(
             |vid|{
                 let url = vid.url.clone().unwrap_or_default();
-                let mimetype = vid.mimeType.clone();
-                html!{
-                    <source src=url type=mimetype />
-                }
-            }
-        );
-        let fallback_source = video_streams.iter().map(
-            |vid|{
-                let url = vid.url.clone().unwrap_or_default();
-                use super::downloader::encodeURIComponent;
-                let urlencoded = encodeURIComponent(& base64::encode(url));
-                let url = (&format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded));
                 let mimetype = vid.mimeType.clone();
                 html!{
                     <source src=url type=mimetype />
@@ -89,9 +77,6 @@ impl Component for VideoPlayer{
                 <video controls=true >
                     {
                         for video_sources
-                    }
-                    {
-                        for fallback_source
                     }
                 </video>
             </figure>

@@ -36,7 +36,16 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
             .as_f64()
             .expect("window width not number");
 
-        let cardscolumn = (window_width / cardwidth).floor() as usize;
+        log::info!("window_width: {}",window_width);
+        let cardscolumn = {
+            let t = ((window_width / cardwidth).floor() as usize);
+            if t==0{
+                1
+            }else{
+                t
+            }
+        };
+        log::info!("cards_column: {}",cardscolumn);
 
         let mut rows = vec![];
 
