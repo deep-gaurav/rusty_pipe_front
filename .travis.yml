@@ -1,4 +1,6 @@
 language: rust
+sudo: required
+dist: xenial
 
 INSTALL_NODE_VIA_NVM: &INSTALL_NODE_VIA_NVM
   |
@@ -21,6 +23,8 @@ matrix:
       - npm install -g cordova
       - cargo install wasm-pack
       - npm install
+      - sudo apt install wine
+      - sudo apt install --no-install-recommends -y libopenjp2-tools
     script:
     - npm run build
     - bash build_and_fixcordova.sh
