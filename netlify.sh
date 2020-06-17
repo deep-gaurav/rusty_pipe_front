@@ -3,11 +3,6 @@
 set -e
 
 
-if [ -f prebuild/index.html ]; then
-   mkdir dist
-   cp prebuild/* dist/
-fi
-if [ ! -f prebuild/index.html]; then
 
    shopt -s dotglob
 
@@ -32,4 +27,3 @@ if [ ! -f prebuild/index.html]; then
       mkdir .cache
    fi
    mv target/* .cache/
-fi
