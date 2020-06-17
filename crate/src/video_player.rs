@@ -65,16 +65,8 @@ impl Component for VideoPlayer{
         );
 
         html!{
-            <figure class="image is-4by2" style={
-
-                let mut styles = String::new();
-                if !self.props.fullpage{
-                    styles = format!("position:fixed; bottom:5px; right:5px; width: 240px; z-index:20")
-                }
-                styles
-
-            } >
-                <video controls=true >
+            <figure class="image is-4by2"   >
+                <video controls=true style="width:100%">
                     {
                         for video_sources
                     }

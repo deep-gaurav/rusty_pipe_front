@@ -18,6 +18,7 @@ extern crate wasm_logger;
 extern crate web_sys;
 extern crate yew;
 extern crate yew_router;
+extern crate human_format;
 
 use wasm_bindgen::prelude::*;
 

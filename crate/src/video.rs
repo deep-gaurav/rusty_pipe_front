@@ -118,23 +118,92 @@ impl Component for Video{
                     Some(extractor)=>{
                         match extractor{
                             Ok(extractor)=>{
-                                let name = extractor.get_name().unwrap_or_default();
+                                let mut human_formatter = human_format::Formatter::new();
+                                human_formatter.with_decimals(2);
 
+                                let name = extractor.get_name().unwrap_or_default();
+                                let author_name = extractor.get_uploader_name().unwrap_or_default();
+                                let avatar = extractor.get_uploader_avatar_url().unwrap_or_default().first().and_then(|f|Some(f.url.clone())).unwrap_or_default();
+                                let likes = human_formatter.format(extractor.get_like_count().unwrap_or_default() as f64);
+                                let dislikes = human_formatter.format(extractor.get_dislike_count().unwrap_or_default() as f64);
+                                let is_popup = self.props.video_id.is_none();
+                                let view_count = extractor.get_view_count().ok().and_then(|f|Some(human_formatter.format(f as f64))).unwrap_or("unknown".to_string());
+
+                                let description = extractor.get_description(true).unwrap_or_default();
+
+                                let desc_div = yew::utils::document().create_element("div").unwrap();
+                                desc_div.set_inner_html(&description.0);
+                                use yew::virtual_dom::VNode;
+                                let desc_ref = VNode::VRef(web_sys::Node::from(desc_div));
                                 html!{
-                                    <div>
-                                        <VideoPlayer fullpage=self.props.video_id.is_some() key={"videoplayer".to_string()} extractor=extractor.clone() />
+                                    <section class="card" style={
+
+                                        let mut styles = String::new();
+                                        if is_popup{
+                                            styles = format!("position:fixed; bottom:5px; right:5px; width: 240px; z-index:20")
+                                        }
+                                        styles
+                        
+                                    }>
+                                        <div class="card-image">
+                                            <VideoPlayer fullpage=self.props.video_id.is_some() key={"videoplayer".to_string()} extractor=extractor.clone() />
+                                        </div>
                                         {
                                             if let Some(_id)= &self.props.video_id{
                                                 html!{
-                                                    <div>{name}</div>
+                                                    <div class="card-content">
+                                                        <p class="title is-5">
+                                                            {name}
+                                                        </p>
+                                                        <div class="level">
+                                                            <div class="level-left">
+                                                                <div class="media level-item">
+                                                                    <div class="media-left">
+                                                                        <figure class="image is-48x48">
+                                                                        <img src=avatar alt="Channelavatar" style="border-radius: 50%"/>
+                                                                        </figure>
+                                                                    </div>
+                                                                    <div class="media-content level is-mobile">
+                                                                        <div class="subtitle is-5">{author_name}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="level-right">
+                                                                <div class="level-item has-text-centered columns is-1">
+                                                                    <div class="column">
+                                                                        <span class="icon is-large">
+                                                                            <i class="fas fa-thumbs-up"></i>
+                                                                        </span>
+                                                                        <p class="is-5">{likes}</p>
+                                                                    </div>
+                                                                    <div class="column">
+                                                                        <span class="icon is-large">
+                                                                            <i class="fas fa-thumbs-down"></i>
+                                                                        </span>
+                                                                        <p class="is-5">{dislikes}</p>
+                                                                    </div>
+                                                                    <div class="column">
+                                                                        <span class="icon is-large">
+                                                                            <i class="fas fa-eye"></i>
+                                                                        </span>
+                                                                        <p class="is-5">{view_count}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            {desc_ref}
+                                                        </div>
+                                                    </div>
                                                 }
                                             }else{
                                                 html!{
 
                                                 }
+                                                
                                             }
                                         }
-                                    </div>
+                                    </section>
                                 }
                             }
                             Err(err) => html! {

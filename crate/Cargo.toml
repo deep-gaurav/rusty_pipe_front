@@ -24,7 +24,7 @@ dotenv = "0.15"
 failure = "0.1"
 yew = { version="0.16", features = ["toml", "yaml", "msgpack", "cbor", "web_sys"]}
 yew-router = { version = "0.13", features = ["web_sys"]}
-web-sys = { version= "0.3", features=["HtmlInputElement","WebSocket","HtmlSelectElement","DomRect", "Element", "Window", "CssStyleDeclaration"]}
+web-sys = { version= "0.3", features=["HtmlInputElement","WebSocket","HtmlSelectElement","DomRect","Node", "Element", "Window", "CssStyleDeclaration"]}
 log = "0.4.6"
 wasm-logger = "0.2.0"
 http = "0.2.1"
@@ -34,3 +34,4 @@ reqwest = "0.10.6"
 async-trait = "0.1.33"
 wasm-bindgen-futures = "0.4.13"
 base64 = "0.12.1"
+human_format = "1.0.3"
