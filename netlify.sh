@@ -21,6 +21,8 @@ set -e
 
    npm run build
 
+   rm dist/*.map
+
    ls -l dist/
 
    if [ ! -d .cache ]; then

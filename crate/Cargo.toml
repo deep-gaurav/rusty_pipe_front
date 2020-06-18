@@ -35,3 +35,7 @@ async-trait = "0.1.33"
 wasm-bindgen-futures = "0.4.13"
 base64 = "0.12.1"
 human_format = "1.0.3"
+
+[profile.release]
+lto=true
+opt-level= 3
