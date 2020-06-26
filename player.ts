@@ -83,6 +83,7 @@ class BulPlayer extends HTMLElement {
         this.vidtag = document.createElement("video");
         this.vidtag.style.display = "block";
         this.vidtag.style.width = "100%";
+        this.vidtag.style.maxHeight = "70vh";
         this.vidtag.poster=this.posterurl;
         this.vidcontainer.appendChild(this.vidtag);
 
@@ -259,11 +260,13 @@ class BulPlayer extends HTMLElement {
             vidcontainr.requestFullscreen({
                 navigationUI: "hide"
             });
+            this.vidtag.style.maxHeight="100vh";
             fullscreenicon.classList.add("is-hidden");
             fullscreeniconexit.classList.remove("is-hidden");
         }
         fullscreeniconexit.onclick = () => {
             document.exitFullscreen();
+            this.vidtag.style.maxHeight="70vh";
             fullscreeniconexit.classList.add("is-hidden");
             fullscreenicon.classList.remove("is-hidden");
         }
