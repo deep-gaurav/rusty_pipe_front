@@ -6,10 +6,13 @@ use rusty_pipe::youtube_extractor::search_extractor::YTSearchItem;
 use rusty_pipe::youtube_extractor::trending_extractor::YTTrendingExtractor;
 use rusty_pipe::youtube_extractor::stream_extractor::YTStreamExtractor;
 use yew::prelude::*;
+use serde::{Serialize};
 
 pub struct VideoPlayer{
     props: Props,
-    link: ComponentLink<Self>
+    link: ComponentLink<Self>,
+    vid_ref: NodeRef,
+    audio_ref: NodeRef
 }
 
 pub enum Msg{
@@ -22,6 +25,33 @@ pub struct Props{
     pub extractor:YTStreamExtractor<DownloaderExample>
 }
 
+#[derive(Serialize)]
+struct VideoSource{
+    url: String,
+    quality: String,
+    mimeType: String,
+    bitrate: i64,
+    height: i64,
+    contentLength: String
+}
+
+#[derive(Serialize)]
+struct AudioSource{
+    url: String,
+    bitrate: i64,
+    quality: String,
+    mimeType: String,
+    contentLength: String
+}
+
+
+use rusty_pipe::youtube_extractor::stream_extractor::StreamItem;
+#[derive(Serialize)]
+struct Source{
+    videoOnlyStreams:Vec<StreamItem>,
+    audioOnlyStreams:Vec<StreamItem>
+}
+
 impl Component for VideoPlayer{
 
     type Message = Msg;
@@ -31,7 +61,9 @@ impl Component for VideoPlayer{
         
         Self{
             props,
-            link
+            link,
+            vid_ref: NodeRef::default(),
+            audio_ref: NodeRef::default()
         }
     }
 
@@ -53,24 +85,20 @@ impl Component for VideoPlayer{
 
         let thumburl = thumbs.first().map(|t|t.url.as_str()).unwrap_or_default();
 
-        let video_streams = self.props.extractor.get_video_stream().unwrap_or_default();
-        let video_sources = video_streams.iter().map(
-            |vid|{
-                let url = vid.url.clone().unwrap_or_default();
-                let mimetype = vid.mimeType.clone();
-                html!{
-                    <source src=url type=mimetype />
-                }
-            }
-        );
+        let video_streams = self.props.extractor.get_video_only_stream().unwrap_or_default();
+        let audio_streams = self.props.extractor.get_audio_streams().unwrap_or_default();
+        let source = Source{
+            videoOnlyStreams:video_streams,
+            audioOnlyStreams:audio_streams
+        };
+        let sourcejson = serde_json::to_string(&source).unwrap_or_default();
+
+        let id = self.props.extractor.get_video_id();
 
         html!{
             <figure class="image is-4by2"   >
-                <video controls=true style="width:100%">
-                    {
-                        for video_sources
-                    }
-                </video>
+                <bul-player data=sourcejson ref=self.vid_ref.clone() style="width:100%;display:block;" poster=thumburl id=id>
+                </bul-player>
             </figure>
         }
     }

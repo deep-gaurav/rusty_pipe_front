@@ -119,6 +119,52 @@
         }
       }
     </style>
+    <style>
+      /* .body {
+          position: relative;
+          width: 100%;
+          height: 100%;
+      } */
+
+      .centertag {
+          position: absolute;
+          
+          top: 50%;
+          left: 50%;
+          -moz-transform: translateX(-50%) translateY(-50%);
+          -webkit-transform: translateX(-50%) translateY(-50%);
+          transform: translateX(-50%) translateY(-50%);
+      }
+      .toprighttag {
+          position: absolute;
+          top: 0%;
+          right: 0%;
+          -moz-transform: translateX(-50%) translateY(50%);
+          -webkit-transform: translateX(-50%) translateY(50%);
+          transform: translateX(-50%) translateY(50%);
+      }
+      .toplefttag {
+          position: absolute;
+          top: 0%;
+          left: 0%;
+          -moz-transform: translateX(50%) translateY(50%);
+          -webkit-transform: translateX(50%) translateY(50%);
+          transform: translateX(50%) translateY(50%);
+      }
+      .buffer {
+          position: absolute;
+          bottom: 0px;
+          height: 0.5em;
+          width: 100%;
+      }
+      .buffersegment {
+          position: absolute;
+          height: 100%;
+      }
+  </style>
+
+<script src="./native-shim.js"></script>
+<script src="./player.ts"></script>
   </head>
   <body>
     <div class="loaderbg has-background-primary">      
