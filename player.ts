@@ -1,4 +1,6 @@
 
+// import * as data from './data.json';
+
 interface videosource {
     url: string,
     quality: string,
@@ -53,6 +55,7 @@ class BulPlayer extends HTMLElement {
     settingclose: HTMLElement;
     qualityholder: HTMLElement;
     loadingicon: HTMLElement;
+    knob:HTMLInputElement;
     posterurl: string;
 
     data:any;
@@ -133,20 +136,28 @@ class BulPlayer extends HTMLElement {
         </div>`.trim()) as HTMLElement;
         this.controlsbase.appendChild(this.fullscreenexiticon);
 
+        let progressbase = document.createElement("div");
+        progressbase.style.width="90%";
+        progressbase.style.position="absolute";
+        progressbase.style.height="0.5em";
+        progressbase.style.bottom="5%";
+        progressbase.style.left="5%"
+        this.controlsbase.appendChild(progressbase)
+
         let backgroundbar = document.createElement("div");
         backgroundbar.style.width = "100%";
         backgroundbar.style.position = "absolute";
         backgroundbar.style.bottom = "0px";
         backgroundbar.style.height = "0.5em";
         backgroundbar.style.backgroundColor = "rgb(133, 133, 133)";
-        this.controlsbase.appendChild(backgroundbar);
+        progressbase.appendChild(backgroundbar);
 
         this.buffercontainer = document.createElement("div");
         this.buffercontainer.classList.add("buffer");
-        this.controlsbase.appendChild(this.buffercontainer);
+        progressbase.appendChild(this.buffercontainer);
 
         this.progressdiv = htmlToElement(`<div id="progressdiv" class="has-background-primary" style="width: 0%; position: absolute; bottom: 0px; height: 0.5em;"></div>`.trim()) as HTMLElement;
-        this.controlsbase.appendChild(this.progressdiv);
+        progressbase.appendChild(this.progressdiv);
 
         this.status = document.createElement("div");
         this.status.classList.add("box");
@@ -155,7 +166,7 @@ class BulPlayer extends HTMLElement {
         this.status.style.marginBottom = "1.2em";
         this.status.style.bottom = "0px";
         this.status.style.padding = "0.2em";
-        this.controlsbase.appendChild(this.status);
+        progressbase.appendChild(this.status);
         this.previewvid = document.createElement("video");
         this.previewvid.preload = "auto";
         this.previewvid.style.width = "8rem";
@@ -167,7 +178,22 @@ class BulPlayer extends HTMLElement {
         this.progressbarcover.style.bottom = "0px";
         this.progressbarcover.style.height = "1em";
         this.progressbarcover.style.backgroundColor = "transparent";
-        this.controlsbase.appendChild(this.progressbarcover);
+        progressbase.appendChild(this.progressbarcover);
+        this.knob= document.createElement("input") as HTMLInputElement;
+        this.knob.type="range";
+        this.knob.style.position="absolute";
+        this.knob.style.height="1.5em";
+        this.knob.style.width="100%";
+        // this.knob.classList.add("has-background-primary");
+        this.knob.style.bottom="0px";
+        this.knob.style.borderRadius="50%";
+        this.knob.style.transform = "translate(0%,25%)"
+        this.knob.style.background="transparent";
+        this.knob.style.webkitAppearance="none";
+        this.knob.min="0";
+        this.knob.max="1";
+
+        progressbase.appendChild(this.knob);
 
         this.settingpanel = htmlToElement(
             ` <div id="settingpanel" class="is-hidden has-text-light"
@@ -217,6 +243,9 @@ class BulPlayer extends HTMLElement {
     }
 
     exec(data) {
+        if(!this.isConnected){
+            return;
+        }
         if(!data){
             data=JSON.parse(this.getAttribute("data"))
         }
@@ -253,8 +282,34 @@ class BulPlayer extends HTMLElement {
         let fullscreeniconexit = this.fullscreenexiticon;
 
         let vidcontainr = this.vidcontainer;
+        let dragging = false;
 
         vidtag.poster=this.posterurl;
+
+        this.knob.onchange=(ev)=>{
+            this.vidtag.currentTime=parseInt(this.knob.value);
+            previewvid.parentElement.classList.add("is-hidden")
+            dragging=false;
+            hidtimer = setTimeout(() => controlbase.classList.add("is-hidden"), 3000)
+        }
+
+
+        this.knob.oninput=(ev)=>{
+            dragging=true;
+            previewvid.currentTime = parseInt(this.knob.value);
+            previewvid.play();
+            previewvid.pause();
+            previewvid.parentElement.classList.remove("is-hidden")
+            status.style.left = clamp(((parseInt(this.knob.value)/this.previewvid.duration)*this.progressbarcover.getBoundingClientRect().width - status.getBoundingClientRect().width / 2), 0, progressbarcover.getBoundingClientRect().width - previewvid.width) + "px"
+            clearTimeout(hidtimer);
+        }
+
+        setInterval(()=>{
+            if(!dragging){
+                this.knob.max=this.vidtag.duration.toString();
+                this.knob.value=this.vidtag.currentTime.toString();
+            }
+        },500)
 
         fullscreenicon.onclick = () => {
             vidcontainr.requestFullscreen({
@@ -332,6 +387,9 @@ class BulPlayer extends HTMLElement {
         let hidtimer = undefined;
 
         vidcontainr.onmouseenter = () => {
+            if(dragging){
+                return
+            }
             controlbase.classList.remove("is-hidden");
             hidtimer = setTimeout(() => controlbase.classList.add("is-hidden"), 3000)
         }
@@ -343,7 +401,7 @@ class BulPlayer extends HTMLElement {
 
         vidcontainr.onmousemove = () => {
             controlbase.classList.remove("is-hidden");
-            if (hidtimer != undefined) {
+            if (hidtimer != undefined && !dragging) {
                 clearTimeout(hidtimer);
                 hidtimer = setTimeout(() => controlbase.classList.add("is-hidden"), 3000)
             }
@@ -439,21 +497,22 @@ class BulPlayer extends HTMLElement {
 
         vidtag.onprogress = () => updatebuffer();
 
-        progressbarcover.onclick = (ev) => {
+        this.knob.onclick = (ev) => {
             let time = (ev.offsetX / progressbarcover.getBoundingClientRect().width) * vidtag.duration;
             vidtag.currentTime = time;
         }
-        progressbarcover.onmousemove = (ev) => {
+        this.knob.onmousemove = (ev) => {
             let time = (parseInt(((ev.offsetX / progressbarcover.getBoundingClientRect().width) * 100).toFixed(0)) / 100) * vidtag.duration;
             previewvid.currentTime = time;
             previewvid.play();
             previewvid.pause();
             status.style.left = clamp((ev.offsetX - status.getBoundingClientRect().width / 2), 0, progressbarcover.getBoundingClientRect().width - previewvid.width) + "px"
         }
-        progressbarcover.onmouseout = (ev) => {
+        this.knob.onmouseout = (ev) => {
+            if(!dragging)
             previewvid.parentElement.classList.add("is-hidden")
         }
-        progressbarcover.onmouseenter = (ev) => {
+        this.knob.onmouseenter = (ev) => {
             previewvid.parentElement.classList.remove("is-hidden")
         }
 
@@ -514,7 +573,7 @@ class BulPlayer extends HTMLElement {
 customElements.define("bul-player", BulPlayer)
 
 
-let holder = document.querySelector(".centertag");
+// let holder = document.getElementById("holder");
 // let bulplayer = document.createElement("bul-player");
 // bulplayer.setAttribute("data", JSON.stringify(data.data.video))
 // bulplayer.setAttribute("poster", "https://i.ytimg.com/vi/8SfbFwMpsRw/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLAuB9BOtmouHrEjo4UE1hyQt084aA");
