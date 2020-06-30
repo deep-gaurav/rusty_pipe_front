@@ -185,7 +185,7 @@ impl Component for Video{
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div>
+                                                        <div style="overflow:auto">
                                                             {desc_ref}
                                                         </div>
                                                     </div>
