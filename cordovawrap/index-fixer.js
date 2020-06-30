@@ -9,7 +9,7 @@ let index = rawdata.toString();
 index = index.replace("/app","app");
 index = index.replace("/bulma","bulma");
 index = index.replace("/font","font");
-index = index.replace("=\"/","");
+index = index.replace(/="\//g,'="');
 index = index.replace("<body>","<body><base href=\"\">")
 
 console.log(index)

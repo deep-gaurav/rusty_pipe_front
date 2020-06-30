@@ -188,10 +188,10 @@ impl Component for App {
 
                     <div class="dropdown is-hoverable">
                       <div class="dropdown-trigger">
-                            <form onsubmit=self.link.callback(|_|Msg::Search) >
+                            <form onsubmit=self.link.callback(|ev:Event|{ev.prevent_default();Msg::Search}) >
                             <input ref=self.search_inputref.clone() class="input" oninput=self.link.callback(
                                 |ip:yew::InputData|Msg::QuerySearch(ip.value)
-                            ) onsubmit=self.link.callback(|_|Msg::Search) />
+                            )/>
                             </form>
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
