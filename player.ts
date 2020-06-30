@@ -104,6 +104,7 @@ class BulPlayer extends HTMLElement {
         this.vidtag.style.display = "block";
         this.vidtag.style.width = "100%";
         this.vidtag.style.maxHeight = "70vh";
+        (this.vidtag as any).autoPictureInPicture = true;
         this.vidtag.poster=this.posterurl;
         this.vidcontainer.appendChild(this.vidtag);
 

@@ -15,7 +15,7 @@ cp ../dist/* www/
 
 node package-fixer.js
 node index-fixer.js
-cordova build electron --release --verbose
+cordova build electron --verbose
 cd ..
 mkdir deploys
 cp cordovawrap/platforms/electron/build/*.exe deploys/
