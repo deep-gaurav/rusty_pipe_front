@@ -461,6 +461,8 @@ class BulPlayer extends HTMLElement {
             }
         }
 
+        let audioMode = false;
+
         function changestate(state: videostates) {
             if (state == videostates.play) {
                 pauseicon.classList.remove("is-hidden");
@@ -473,7 +475,9 @@ class BulPlayer extends HTMLElement {
                 playicon.classList.remove("is-hidden");
                 pauseicon.classList.add("is-hidden");
                 loadingicon.classList.add("is-hidden");
-                audtag.pause();
+                if(!audioMode){
+                    audtag.pause();
+                }
             } else {
                 loadingicon.classList.remove("is-hidden");
                 playicon.classList.add("is-hidden");
@@ -481,6 +485,20 @@ class BulPlayer extends HTMLElement {
                 audtag.pause();
             }
         }
+
+        document.addEventListener("visibilitychange",()=>{
+            if(document.hidden){
+                audioMode=true;
+            }else{
+                audioMode=false;
+                if(this.audtag.currentTime>this.vidtag.currentTime){
+                    this.vidtag.currentTime=this.audtag.currentTime;
+                    this.audtag.pause();
+                    this.vidtag.pause();
+                    this.vidtag.play();
+                }
+            }
+        });
 
         function updateloader() {
             if (!loadingicon.classList.contains("is-hidden")) {
@@ -575,25 +593,41 @@ class BulPlayer extends HTMLElement {
         }
         if ('mediaSession' in navigator) {
             (navigator as any).mediaSession.setActionHandler('play', function() {
-                vidtag.play()
+                if(audioMode){
+                    audtag.play();
+                }else{
+                    vidtag.play();
+                }
             });
             (navigator as any).mediaSession.setActionHandler('pause', function() {
-                vidtag.pause()
+                if(audioMode){
+                    audtag.pause();
+                }else{
+                    vidtag.pause();
+                }
             });
             let skipTime = 10; // Time to skip in seconds
 
             (navigator as any).mediaSession.setActionHandler('seekbackward', function() {
               // User clicked "Seek Backward" media notification icon.
-               vidtag.currentTime = Math.max(vidtag.currentTime - skipTime, 0);
-               vidtag.pause();
-               vidtag.play();
+                if(audioMode){
+                    audtag.currentTime = Math.max(audtag.currentTime - skipTime, 0);
+                }else{
+                    vidtag.currentTime = Math.max(vidtag.currentTime - skipTime, 0);
+                    vidtag.pause();
+                    vidtag.play();
+                }
             });
             
             (navigator as any).mediaSession.setActionHandler('seekforward', function() {
               // User clicked "Seek Forward" media notification icon.
-               vidtag.currentTime = Math.min(vidtag.currentTime + skipTime, vidtag.duration);
-               vidtag.pause();
-               vidtag.play();
+                if(audioMode){
+                    audtag.currentTime = Math.min(audtag.currentTime + skipTime, audtag.duration);
+                }else{
+                    vidtag.currentTime = Math.min(vidtag.currentTime + skipTime, vidtag.duration);
+                    vidtag.pause();
+                    vidtag.play();
+                }
             });
         }
 
