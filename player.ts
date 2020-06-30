@@ -35,7 +35,15 @@ function htmlToElement(html) {
     template.innerHTML = html;
     return template.content.firstChild;
 }
-
+function zeroFill( number, width )
+{
+  width -= number.toString().length;
+  if ( width > 0 )
+  {
+    return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
+  }
+  return number + ""; // always return a string
+}
 class BulPlayer extends HTMLElement {
     vidcontainer: HTMLDivElement;
     vidtag: HTMLVideoElement;
@@ -57,6 +65,9 @@ class BulPlayer extends HTMLElement {
     loadingicon: HTMLElement;
     knob:HTMLInputElement;
     posterurl: string;
+    timedisp: HTMLElement;
+
+    holdingcontainer: HTMLElement;
 
     data:any;
 
@@ -77,11 +88,17 @@ class BulPlayer extends HTMLElement {
             this.posterurl=this.getAttribute("poster");
         }
 
+        this.holdingcontainer = document.createElement("div");
+        this.holdingcontainer.style.position="relative";
+        this.holdingcontainer.style.width="100%";
+        this.appendChild(this.holdingcontainer);
+        
         this.vidcontainer = document.createElement("div");
         this.vidcontainer.style.width = "100%";
         this.vidcontainer.style.position = "relative";
+        this.vidcontainer.style.zIndex = "25";
         this.vidcontainer.classList.add("has-text-light");
-        this.appendChild(this.vidcontainer);
+        this.holdingcontainer.appendChild(this.vidcontainer);
 
         this.vidtag = document.createElement("video");
         this.vidtag.style.display = "block";
@@ -195,6 +212,15 @@ class BulPlayer extends HTMLElement {
 
         progressbase.appendChild(this.knob);
 
+        this.timedisp = document.createElement("div");
+        this.timedisp.style.position = "absolute";
+        this.timedisp.style.bottom = "1.2em";   
+        // this.progressbarcover.style.width = "100%";
+        // this.progressbarcover.style.bottom = "0px";
+        // this.progressbarcover.style.height = "1em";        
+
+        progressbase.appendChild(this.timedisp)
+
         this.settingpanel = htmlToElement(
             ` <div id="settingpanel" class="is-hidden has-text-light"
             style="position: absolute;top: 0px; width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.637);">
@@ -253,6 +279,32 @@ class BulPlayer extends HTMLElement {
             this.posterurl=this.getAttribute("poster")
         }
 
+        let observer = new IntersectionObserver((entry,observer)=>{
+            entry.forEach(entry => {
+                
+                if(entry.intersectionRatio>0){
+                    this.vidcontainer.style.position="relative";
+                    this.vidcontainer.style.right="unset";
+                    this.vidcontainer.style.width="100%";
+                    this.vidcontainer.style.bottom="unset";
+                    this.holdingcontainer.style.height="unset";
+                }else{
+                    if(this.clientHeight>0){
+                        let hch = this.clientHeight.toString()+"px";
+                        console.log(hch)
+                        this.vidcontainer.style.position="fixed";
+                        this.vidcontainer.style.right="5px";
+                        this.vidcontainer.style.width="200px";
+                        this.vidcontainer.style.bottom="5px";
+                        this.holdingcontainer.style.height = hch;
+                    }
+                }
+            })
+        });
+
+        observer.observe(this.holdingcontainer
+            );
+
         let vidsources: Array<videosource> = data.videoOnlyStreams;
         let audiosources: Array<audiosource> = data.audioOnlyStreams;
 
@@ -309,6 +361,7 @@ class BulPlayer extends HTMLElement {
                 this.knob.max=this.vidtag.duration.toString();
                 this.knob.value=this.vidtag.currentTime.toString();
             }
+            this.timedisp.textContent = (this.vidtag.currentTime/60).toFixed(0)+":"+ zeroFill((this.vidtag.currentTime%60).toFixed(0),2)+" / "+(this.vidtag.duration/60).toFixed(0)+":"+zeroFill((this.vidtag.duration%60).toFixed(0),2);
         },500)
 
         fullscreenicon.onclick = () => {
@@ -518,6 +571,29 @@ class BulPlayer extends HTMLElement {
 
         function clamp(num, min, max) {
             return num <= min ? min : num >= max ? max : num;
+        }
+        if ('mediaSession' in navigator) {
+            (navigator as any).mediaSession.setActionHandler('play', function() {
+                vidtag.play()
+            });
+            (navigator as any).mediaSession.setActionHandler('pause', function() {
+                vidtag.pause()
+            });
+            let skipTime = 10; // Time to skip in seconds
+
+            (navigator as any).mediaSession.setActionHandler('seekbackward', function() {
+              // User clicked "Seek Backward" media notification icon.
+               vidtag.currentTime = Math.max(vidtag.currentTime - skipTime, 0);
+               vidtag.pause();
+               vidtag.play();
+            });
+            
+            (navigator as any).mediaSession.setActionHandler('seekforward', function() {
+              // User clicked "Seek Forward" media notification icon.
+               vidtag.currentTime = Math.min(vidtag.currentTime + skipTime, vidtag.duration);
+               vidtag.pause();
+               vidtag.play();
+            });
         }
 
         function playprefquality() {

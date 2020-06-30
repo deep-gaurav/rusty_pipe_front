@@ -51,6 +51,7 @@ impl Video{
 
 }
 
+
 impl Component for Video{
 
     type Message=Msg;
@@ -135,16 +136,9 @@ impl Component for Video{
                                 desc_div.set_inner_html(&description.0);
                                 use yew::virtual_dom::VNode;
                                 let desc_ref = VNode::VRef(web_sys::Node::from(desc_div));
+                                
                                 html!{
-                                    <section class="card" style={
-
-                                        let mut styles = String::new();
-                                        if is_popup{
-                                            styles = format!("position:fixed; bottom:5px; right:5px; width: 240px; z-index:20")
-                                        }
-                                        styles
-                        
-                                    }>
+                                    <section class="card" >
                                         <div class="card-image">
                                             <VideoPlayer fullpage=self.props.video_id.is_some() key={"videoplayer".to_string()} extractor=extractor.clone() />
                                         </div>

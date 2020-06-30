@@ -7,6 +7,8 @@ use rusty_pipe::youtube_extractor::trending_extractor::YTTrendingExtractor;
 use rusty_pipe::youtube_extractor::stream_extractor::YTStreamExtractor;
 use yew::prelude::*;
 use serde::{Serialize};
+use wasm_bindgen::prelude::*;
+
 
 pub struct VideoPlayer{
     props: Props,
@@ -52,6 +54,26 @@ struct Source{
     audioOnlyStreams:Vec<StreamItem>
 }
 
+
+#[wasm_bindgen(inline_js = r##"export function setmedia(title, author,image,height,width) {
+    console.log("setmedia",title)
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: title,
+          artist: author,
+          album: '',
+          artwork: [
+              {
+                  src: image, size:width+'x'+height, type: 'image/png'
+              }
+          ]
+        });
+    }
+}"##)]
+extern "C" {
+    fn setmedia(title:&str,author:&str,image:&str,height:i64,width:i64);
+}
+
 impl Component for VideoPlayer{
 
     type Message = Msg;
@@ -94,7 +116,14 @@ impl Component for VideoPlayer{
         let sourcejson = serde_json::to_string(&source).unwrap_or_default();
 
         let id = self.props.extractor.get_video_id();
-
+        let name = self.props.extractor.get_name().unwrap_or_default();
+        let author_name = self.props.extractor.get_uploader_name().unwrap_or_default();
+        
+        setmedia(&name,&author_name,
+            thumburl,
+            thumbs.first().map(|f|f.width).unwrap_or_default() as i64,
+            thumbs.first().map(|f|f.height).unwrap_or_default() as i64    
+        );
         html!{
             <figure class="image is-4by2"   >
                 <bul-player data=sourcejson ref=self.vid_ref.clone() style="width:100%;display:block;" poster=thumburl id=id>
