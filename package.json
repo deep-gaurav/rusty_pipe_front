@@ -7,7 +7,7 @@
   "version": "0.16.0",
   "license": "MIT",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "node wasm-builder.js",
     "build": "parcel build index.html",
     "debug": "NODE_ENV=dev node --nolazy --inspect-brk=9229 wasm-builder.js"
   },

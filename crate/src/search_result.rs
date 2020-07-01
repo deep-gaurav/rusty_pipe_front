@@ -112,7 +112,9 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
                                         }
                                     }
                                     <div class="media-content">
-                                        <p class="title is-6">{vid_name}</p>
+                                        <p class="title is-6" style="-webkit-line-clamp: 2;text-overflow: ellipsis;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;">
+                                            {vid_name}
+                                        </p>
                                         <p class="subtitle is-6">{author_name}</p>
                                     </div>
                                     </div>

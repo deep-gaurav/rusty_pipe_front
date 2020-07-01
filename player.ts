@@ -680,6 +680,10 @@ class BulPlayer extends HTMLElement {
         }
         console.log("name",name)
     }
+    disconnectedCallback(){
+        this.vidtag.src="";
+        this.audtag.src="";
+    }
 }
 customElements.define("bul-player", BulPlayer)
 
