@@ -137,67 +137,79 @@ impl Component for Video{
                                 use yew::virtual_dom::VNode;
                                 let desc_ref = VNode::VRef(web_sys::Node::from(desc_div));
                                 
+                                let related_videos = extractor.get_related().unwrap_or_default();
+                                use super::search_result::layout_result;
+                                let related_videos = layout_result(1080_f64, &related_videos);
                                 html!{
-                                    <section class="card" >
-                                        <div class="card-image">
-                                            <VideoPlayer fullpage=self.props.video_id.is_some() key={"videoplayer".to_string()} extractor=extractor.clone() />
-                                        </div>
-                                        {
-                                            if let Some(_id)= &self.props.video_id{
-                                                html!{
-                                                    <div class="card-content">
-                                                        <p class="title is-5">
-                                                            {name}
-                                                        </p>
-                                                        <div class="level">
-                                                            <div class="level-left">
-                                                                <div class="media level-item">
-                                                                    <div class="media-left">
-                                                                        <figure class="image is-48x48">
-                                                                        <img src=avatar alt="Channelavatar" style="border-radius: 50%"/>
-                                                                        </figure>
+                                    <div class="columns">
+                                        <div class="column">
+                                            <section class="card" >
+                                                <div class="card-image">
+                                                    <VideoPlayer fullpage=self.props.video_id.is_some() key={"videoplayer".to_string()} extractor=extractor.clone() />
+                                                </div>
+                                                {
+                                                    if let Some(_id)= &self.props.video_id{
+                                                        html!{
+                                                            <div class="card-content">
+                                                                <p class="title is-5">
+                                                                    {name}
+                                                                </p>
+                                                                <div class="level">
+                                                                    <div class="level-left">
+                                                                        <div class="media level-item">
+                                                                            <div class="media-left">
+                                                                                <figure class="image is-48x48">
+                                                                                <img src=avatar alt="Channelavatar" style="border-radius: 50%"/>
+                                                                                </figure>
+                                                                            </div>
+                                                                            <div class="media-content level is-mobile">
+                                                                                <div class="subtitle is-5">{author_name}</div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="media-content level is-mobile">
-                                                                        <div class="subtitle is-5">{author_name}</div>
+                                                                    <div class="level-right">
+                                                                        <div class="level-item has-text-centered columns is-1">
+                                                                            <div class="column">
+                                                                                <span class="icon is-large">
+                                                                                    <i class="fas fa-thumbs-up"></i>
+                                                                                </span>
+                                                                                <p class="is-5">{likes}</p>
+                                                                            </div>
+                                                                            <div class="column">
+                                                                                <span class="icon is-large">
+                                                                                    <i class="fas fa-thumbs-down"></i>
+                                                                                </span>
+                                                                                <p class="is-5">{dislikes}</p>
+                                                                            </div>
+                                                                            <div class="column">
+                                                                                <span class="icon is-large">
+                                                                                    <i class="fas fa-eye"></i>
+                                                                                </span>
+                                                                                <p class="is-5">{view_count}</p>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="level-right">
-                                                                <div class="level-item has-text-centered columns is-1">
-                                                                    <div class="column">
-                                                                        <span class="icon is-large">
-                                                                            <i class="fas fa-thumbs-up"></i>
-                                                                        </span>
-                                                                        <p class="is-5">{likes}</p>
-                                                                    </div>
-                                                                    <div class="column">
-                                                                        <span class="icon is-large">
-                                                                            <i class="fas fa-thumbs-down"></i>
-                                                                        </span>
-                                                                        <p class="is-5">{dislikes}</p>
-                                                                    </div>
-                                                                    <div class="column">
-                                                                        <span class="icon is-large">
-                                                                            <i class="fas fa-eye"></i>
-                                                                        </span>
-                                                                        <p class="is-5">{view_count}</p>
-                                                                    </div>
+                                                                <div style="overflow:auto">
+                                                                    {desc_ref}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div style="overflow:auto">
-                                                            {desc_ref}
-                                                        </div>
-                                                    </div>
-                                                }
-                                            }else{
-                                                html!{
+                                                        }
+                                                    }else{
+                                                        html!{
 
+                                                        }
+                                                        
+                                                    }
                                                 }
-                                                
+                                            </section>
+                                        </div>
+                                        <div class="column is-3">
+                                            {
+                                                for related_videos   
                                             }
-                                        }
-                                    </section>
+                                        </div>
+                                    </div>
                                 }
                             }
                             Err(err) => html! {

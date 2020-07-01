@@ -96,11 +96,21 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
                                 </div>
                                 <div class="card-content">
                                     <div class="media">
-                                    <div class="media-left">
-                                        <figure class="image is-48x48">
-                                        <img src=avatar alt="Channelavatar" style="border-radius: 50%"/>
-                                        </figure>
-                                    </div>
+                                    {
+                                        if !avatar.is_empty(){
+                                            html!{
+                                                <div class="media-left">
+                                                    <figure class="image is-48x48">
+                                                    <img src=avatar alt="Channelavatar" style="border-radius: 50%"/>
+                                                    </figure>
+                                                </div>
+                                            }
+                                        }else{
+                                            html!{
+
+                                            }
+                                        }
+                                    }
                                     <div class="media-content">
                                         <p class="title is-6">{vid_name}</p>
                                         <p class="subtitle is-6">{author_name}</p>
