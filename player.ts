@@ -35,14 +35,12 @@ function htmlToElement(html) {
     template.innerHTML = html;
     return template.content.firstChild;
 }
-function zeroFill( number, width )
-{
-  width -= number.toString().length;
-  if ( width > 0 )
-  {
-    return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
-  }
-  return number + ""; // always return a string
+function zeroFill(number, width) {
+    width -= number.toString().length;
+    if (width > 0) {
+        return new Array(width + (/\./.test(number) ? 2 : 1)).join('0') + number;
+    }
+    return number + ""; // always return a string
 }
 class BulPlayer extends HTMLElement {
     vidcontainer: HTMLDivElement;
@@ -63,13 +61,15 @@ class BulPlayer extends HTMLElement {
     settingclose: HTMLElement;
     qualityholder: HTMLElement;
     loadingicon: HTMLElement;
-    knob:HTMLInputElement;
+    knob: HTMLInputElement;
     posterurl: string;
     timedisp: HTMLElement;
+    pipbutton: HTMLElement;
 
     holdingcontainer: HTMLElement;
 
-    data:any;
+
+    data: any;
 
     constructor() {
         super();
@@ -78,21 +78,21 @@ class BulPlayer extends HTMLElement {
 
     }
 
-    static get observedAttributes() { return ['data','poster','id']; }
+    static get observedAttributes() { return ['data', 'poster', 'id']; }
 
     connectedCallback() {
 
         console.log("connected")
-        console.log("attributes",this.getAttributeNames());
-        if(!this.posterurl){
-            this.posterurl=this.getAttribute("poster");
+        console.log("attributes", this.getAttributeNames());
+        if (!this.posterurl) {
+            this.posterurl = this.getAttribute("poster");
         }
 
         this.holdingcontainer = document.createElement("div");
-        this.holdingcontainer.style.position="relative";
-        this.holdingcontainer.style.width="100%";
+        this.holdingcontainer.style.position = "relative";
+        this.holdingcontainer.style.width = "100%";
         this.appendChild(this.holdingcontainer);
-        
+
         this.vidcontainer = document.createElement("div");
         this.vidcontainer.style.width = "100%";
         this.vidcontainer.style.position = "relative";
@@ -105,7 +105,7 @@ class BulPlayer extends HTMLElement {
         this.vidtag.style.width = "100%";
         this.vidtag.style.maxHeight = "70vh";
         (this.vidtag as any).autoPictureInPicture = true;
-        this.vidtag.poster=this.posterurl;
+        this.vidtag.poster = this.posterurl;
         this.vidcontainer.appendChild(this.vidtag);
 
         this.audtag = document.createElement("audio");
@@ -155,11 +155,11 @@ class BulPlayer extends HTMLElement {
         this.controlsbase.appendChild(this.fullscreenexiticon);
 
         let progressbase = document.createElement("div");
-        progressbase.style.width="90%";
-        progressbase.style.position="absolute";
-        progressbase.style.height="0.5em";
-        progressbase.style.bottom="5%";
-        progressbase.style.left="5%"
+        progressbase.style.width = "90%";
+        progressbase.style.position = "absolute";
+        progressbase.style.height = "0.5em";
+        progressbase.style.bottom = "5%";
+        progressbase.style.left = "5%"
         this.controlsbase.appendChild(progressbase)
 
         let backgroundbar = document.createElement("div");
@@ -197,29 +197,37 @@ class BulPlayer extends HTMLElement {
         this.progressbarcover.style.height = "1em";
         this.progressbarcover.style.backgroundColor = "transparent";
         progressbase.appendChild(this.progressbarcover);
-        this.knob= document.createElement("input") as HTMLInputElement;
-        this.knob.type="range";
-        this.knob.style.position="absolute";
-        this.knob.style.height="1.5em";
-        this.knob.style.width="100%";
+        this.knob = document.createElement("input") as HTMLInputElement;
+        this.knob.type = "range";
+        this.knob.style.position = "absolute";
+        this.knob.style.height = "1.5em";
+        this.knob.style.width = "100%";
         // this.knob.classList.add("has-background-primary");
-        this.knob.style.bottom="0px";
-        this.knob.style.borderRadius="50%";
+        this.knob.style.bottom = "0px";
+        this.knob.style.borderRadius = "50%";
         this.knob.style.transform = "translate(0%,25%)"
-        this.knob.style.background="transparent";
-        this.knob.style.webkitAppearance="none";
-        this.knob.min="0";
-        this.knob.max="1";
+        this.knob.style.background = "transparent";
+        this.knob.style.webkitAppearance = "none";
+        this.knob.min = "0";
+        this.knob.max = "1";
 
         progressbase.appendChild(this.knob);
 
         this.timedisp = document.createElement("div");
         this.timedisp.style.position = "absolute";
-        this.timedisp.style.bottom = "1.2em";   
+        this.timedisp.style.bottom = "1.2em";
         // this.progressbarcover.style.width = "100%";
         // this.progressbarcover.style.bottom = "0px";
         // this.progressbarcover.style.height = "1em";        
 
+        this.pipbutton = htmlToElement(`<div class="icon"><svg style="width:24px;height:24px" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M19,11H11V17H19V11M23,19V5C23,3.88 22.1,3 21,3H3A2,2 0 0,0 1,5V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19M21,19H3V4.97H21V19Z" />
+    </svg> </div>`) as HTMLElement;
+        this.pipbutton.style.position = "absolute";
+        this.pipbutton.style.bottom = "1.2em";
+        this.pipbutton.style.right = "0";
+
+        progressbase.appendChild(this.pipbutton);
         progressbase.appendChild(this.timedisp)
 
         this.settingpanel = htmlToElement(
@@ -259,44 +267,44 @@ class BulPlayer extends HTMLElement {
     </div>`) as HTMLElement;
         this.vidcontainer.appendChild(this.loadingicon);
 
-        if(this.data){
+        if (this.data) {
             this.exec(this.data);
         }
     }
 
     changedata(data) {
-        this.data=data;
+        this.data = data;
         this.exec(data);
     }
 
     exec(data) {
-        if(!this.isConnected){
+        if (!this.isConnected) {
             return;
         }
-        if(!data){
-            data=JSON.parse(this.getAttribute("data"))
+        if (!data) {
+            data = JSON.parse(this.getAttribute("data"))
         }
-        if(!this.posterurl){
-            this.posterurl=this.getAttribute("poster")
+        if (!this.posterurl) {
+            this.posterurl = this.getAttribute("poster")
         }
 
-        let observer = new IntersectionObserver((entry,observer)=>{
+        let observer = new IntersectionObserver((entry, observer) => {
             entry.forEach(entry => {
-                
-                if(entry.intersectionRatio>0){
-                    this.vidcontainer.style.position="relative";
-                    this.vidcontainer.style.right="unset";
-                    this.vidcontainer.style.width="100%";
-                    this.vidcontainer.style.bottom="unset";
-                    this.holdingcontainer.style.height="unset";
-                }else{
-                    if(this.clientHeight>0){
-                        let hch = this.clientHeight.toString()+"px";
+
+                if (entry.intersectionRatio > 0) {
+                    this.vidcontainer.style.position = "relative";
+                    this.vidcontainer.style.right = "unset";
+                    this.vidcontainer.style.width = "100%";
+                    this.vidcontainer.style.bottom = "unset";
+                    this.holdingcontainer.style.height = "unset";
+                } else {
+                    if (this.clientHeight > 0) {
+                        let hch = this.clientHeight.toString() + "px";
                         console.log(hch)
-                        this.vidcontainer.style.position="fixed";
-                        this.vidcontainer.style.right="5px";
-                        this.vidcontainer.style.width="200px";
-                        this.vidcontainer.style.bottom="5px";
+                        this.vidcontainer.style.position = "fixed";
+                        this.vidcontainer.style.right = "5px";
+                        this.vidcontainer.style.width = "200px";
+                        this.vidcontainer.style.bottom = "5px";
                         this.holdingcontainer.style.height = hch;
                     }
                 }
@@ -304,7 +312,7 @@ class BulPlayer extends HTMLElement {
         });
 
         observer.observe(this.holdingcontainer
-            );
+        );
 
         let vidsources: Array<videosource> = data.videoOnlyStreams;
         let audiosources: Array<audiosource> = data.audioOnlyStreams;
@@ -337,45 +345,45 @@ class BulPlayer extends HTMLElement {
         let vidcontainr = this.vidcontainer;
         let dragging = false;
 
-        vidtag.poster=this.posterurl;
+        vidtag.poster = this.posterurl;
 
-        this.knob.onchange=(ev)=>{
-            this.vidtag.currentTime=parseInt(this.knob.value);
+        this.knob.onchange = (ev) => {
+            this.vidtag.currentTime = parseInt(this.knob.value);
             previewvid.parentElement.classList.add("is-hidden")
-            dragging=false;
+            dragging = false;
             hidtimer = setTimeout(() => controlbase.classList.add("is-hidden"), 3000)
         }
 
 
-        this.knob.oninput=(ev)=>{
-            dragging=true;
+        this.knob.oninput = (ev) => {
+            dragging = true;
             previewvid.currentTime = parseInt(this.knob.value);
             previewvid.play();
             previewvid.pause();
             previewvid.parentElement.classList.remove("is-hidden")
-            status.style.left = clamp(((parseInt(this.knob.value)/this.previewvid.duration)*this.progressbarcover.getBoundingClientRect().width - status.getBoundingClientRect().width / 2), 0, progressbarcover.getBoundingClientRect().width - previewvid.width) + "px"
+            status.style.left = clamp(((parseInt(this.knob.value) / this.previewvid.duration) * this.progressbarcover.getBoundingClientRect().width - status.getBoundingClientRect().width / 2), 0, progressbarcover.getBoundingClientRect().width - previewvid.width) + "px"
             clearTimeout(hidtimer);
         }
 
-        setInterval(()=>{
-            if(!dragging){
-                this.knob.max=this.vidtag.duration.toString();
-                this.knob.value=this.vidtag.currentTime.toString();
+        setInterval(() => {
+            if (!dragging) {
+                this.knob.max = this.vidtag.duration.toString();
+                this.knob.value = this.vidtag.currentTime.toString();
             }
-            this.timedisp.textContent = (this.vidtag.currentTime/60).toFixed(0)+":"+ zeroFill((this.vidtag.currentTime%60).toFixed(0),2)+" / "+(this.vidtag.duration/60).toFixed(0)+":"+zeroFill((this.vidtag.duration%60).toFixed(0),2);
-        },500)
+            this.timedisp.textContent = (this.vidtag.currentTime / 60).toFixed(0) + ":" + zeroFill((this.vidtag.currentTime % 60).toFixed(0), 2) + " / " + (this.vidtag.duration / 60).toFixed(0) + ":" + zeroFill((this.vidtag.duration % 60).toFixed(0), 2);
+        }, 500)
 
         fullscreenicon.onclick = () => {
             vidcontainr.requestFullscreen({
                 navigationUI: "hide"
             });
-            this.vidtag.style.maxHeight="100vh";
+            this.vidtag.style.maxHeight = "100vh";
             fullscreenicon.classList.add("is-hidden");
             fullscreeniconexit.classList.remove("is-hidden");
         }
         fullscreeniconexit.onclick = () => {
             document.exitFullscreen();
-            this.vidtag.style.maxHeight="70vh";
+            this.vidtag.style.maxHeight = "70vh";
             fullscreeniconexit.classList.add("is-hidden");
             fullscreenicon.classList.remove("is-hidden");
         }
@@ -402,6 +410,30 @@ class BulPlayer extends HTMLElement {
         }
 
         let prefquality = 420;
+
+        let pipWindow;
+        if ('pictureInPictureEnabled' in document) {
+
+            this.pipbutton.addEventListener('click', async function (event) {
+                console.log('Toggling Picture-in-Picture...');
+                try {
+
+                    if (vidtag !== (document as any).pictureInPictureElement)
+                        await (vidtag as any).requestPictureInPicture();
+                    else
+                        await (document as any).exitPictureInPicture();
+
+                } catch (error) {
+                    console.log(`> Argh! ${error}`);
+                } finally {
+                }
+            });
+
+        } else {
+            // Hide button if Picture-in-Picture is not supported.
+            this.pipbutton.classList.add("is-hidden");
+        }
+
 
 
         let qualities_set = new Set<number>();
@@ -441,7 +473,7 @@ class BulPlayer extends HTMLElement {
         let hidtimer = undefined;
 
         vidcontainr.onmouseenter = () => {
-            if(dragging){
+            if (dragging) {
                 return
             }
             controlbase.classList.remove("is-hidden");
@@ -475,7 +507,7 @@ class BulPlayer extends HTMLElement {
                 playicon.classList.remove("is-hidden");
                 pauseicon.classList.add("is-hidden");
                 loadingicon.classList.add("is-hidden");
-                if(!audioMode){
+                if (!audioMode) {
                     audtag.pause();
                 }
             } else {
@@ -486,13 +518,13 @@ class BulPlayer extends HTMLElement {
             }
         }
 
-        document.addEventListener("visibilitychange",()=>{
-            if(document.hidden){
-                audioMode=true;
-            }else{
-                audioMode=false;
-                if(this.audtag.currentTime>this.vidtag.currentTime){
-                    this.vidtag.currentTime=this.audtag.currentTime;
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && !(document as any).pictureInPictureElement) {
+                audioMode = true;
+            } else {
+                audioMode = false;
+                if (this.audtag.currentTime > this.vidtag.currentTime) {
+                    this.vidtag.currentTime = this.audtag.currentTime;
                     this.audtag.pause();
                     this.vidtag.pause();
                     this.vidtag.play();
@@ -581,8 +613,8 @@ class BulPlayer extends HTMLElement {
             status.style.left = clamp((ev.offsetX - status.getBoundingClientRect().width / 2), 0, progressbarcover.getBoundingClientRect().width - previewvid.width) + "px"
         }
         this.knob.onmouseout = (ev) => {
-            if(!dragging)
-            previewvid.parentElement.classList.add("is-hidden")
+            if (!dragging)
+                previewvid.parentElement.classList.add("is-hidden")
         }
         this.knob.onmouseenter = (ev) => {
             previewvid.parentElement.classList.remove("is-hidden")
@@ -592,38 +624,38 @@ class BulPlayer extends HTMLElement {
             return num <= min ? min : num >= max ? max : num;
         }
         if ('mediaSession' in navigator) {
-            (navigator as any).mediaSession.setActionHandler('play', function() {
-                if(audioMode){
+            (navigator as any).mediaSession.setActionHandler('play', function () {
+                if (audioMode) {
                     audtag.play();
-                }else{
+                } else {
                     vidtag.play();
                 }
             });
-            (navigator as any).mediaSession.setActionHandler('pause', function() {
-                if(audioMode){
+            (navigator as any).mediaSession.setActionHandler('pause', function () {
+                if (audioMode) {
                     audtag.pause();
-                }else{
+                } else {
                     vidtag.pause();
                 }
             });
             let skipTime = 10; // Time to skip in seconds
 
-            (navigator as any).mediaSession.setActionHandler('seekbackward', function() {
-              // User clicked "Seek Backward" media notification icon.
-                if(audioMode){
+            (navigator as any).mediaSession.setActionHandler('seekbackward', function () {
+                // User clicked "Seek Backward" media notification icon.
+                if (audioMode) {
                     audtag.currentTime = Math.max(audtag.currentTime - skipTime, 0);
-                }else{
+                } else {
                     vidtag.currentTime = Math.max(vidtag.currentTime - skipTime, 0);
                     vidtag.pause();
                     vidtag.play();
                 }
             });
-            
-            (navigator as any).mediaSession.setActionHandler('seekforward', function() {
-              // User clicked "Seek Forward" media notification icon.
-                if(audioMode){
+
+            (navigator as any).mediaSession.setActionHandler('seekforward', function () {
+                // User clicked "Seek Forward" media notification icon.
+                if (audioMode) {
                     audtag.currentTime = Math.min(audtag.currentTime + skipTime, audtag.duration);
-                }else{
+                } else {
                     vidtag.currentTime = Math.min(vidtag.currentTime + skipTime, vidtag.duration);
                     vidtag.pause();
                     vidtag.play();
@@ -661,28 +693,28 @@ class BulPlayer extends HTMLElement {
         console.log("attr channge");
         if (name == "data" && oldValue != newValue) {
             let data = JSON.parse(newValue);
-            if(this.data){
+            if (this.data) {
                 this.data = data;
-            }else{
+            } else {
                 this.data = data;
                 this.exec(this.data);
             }
-        }else if(name=="poster"){
-            console.log("setposter ",newValue);
-            this.posterurl=newValue;
-            if(this.vidtag){
-                this.vidtag.poster=this.posterurl;
+        } else if (name == "poster") {
+            console.log("setposter ", newValue);
+            this.posterurl = newValue;
+            if (this.vidtag) {
+                this.vidtag.poster = this.posterurl;
             }
-        }else if(name=="id"){
-            if(newValue!=oldValue){
+        } else if (name == "id") {
+            if (newValue != oldValue) {
                 this.exec(this.data);
             }
         }
-        console.log("name",name)
+        console.log("name", name)
     }
-    disconnectedCallback(){
-        this.vidtag.src="";
-        this.audtag.src="";
+    disconnectedCallback() {
+        this.vidtag.src = "";
+        this.audtag.src = "";
     }
 }
 customElements.define("bul-player", BulPlayer)
