@@ -6,6 +6,7 @@ use super::trending::Trending;
 use super::video::Video;
 use crate::downloader::{send_future, DownloaderExample};
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
+use wasm_bindgen::prelude::*;
 
 pub struct App {
     link: ComponentLink<Self>,
@@ -23,6 +24,7 @@ pub enum Msg {
     Search,
     ClickSuggestion(String),
     ToggleNavMenu,
+    Back,
 }
 
 #[derive(Switch, Debug, Clone)]
@@ -135,6 +137,10 @@ impl Component for App {
                 }
             }
 
+            Msg::Back => {
+              yew::utils::window().history().expect("History not found").back();
+              false
+            }
             Msg::Ignore => false,
         }
     }
@@ -164,6 +170,9 @@ impl Component for App {
           <>
             <div class="navbar is-active" style="position:sticky;top:0;">
               <div class="navbar-brand">
+                <div class="icon is-large" onclick=self.link.callback(|_|Msg::Back)>
+                  <i class="fas fa-chevron-left"/>
+                </div>
                 <div class="navbar-item">
                   <h2 class="title">{"RustyPipe"}</h2>
                 </div>
