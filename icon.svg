@@ -7,169 +7,172 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="icon.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   id="svg8"
-   version="1.1"
-   viewBox="0 0 210 297"
+   inkscape:export-ydpi="96"
+   inkscape:export-xdpi="96"
+   inkscape:export-filename="/home/deep/sideproj/rusty_pipe_front/icon.png"
+   width="210mm"
    height="297mm"
-   width="210mm">
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="icon.svg">
   <defs
      id="defs2">
     <filter
-       id="filter240"
-       style="color-interpolation-filters:sRGB"
-       inkscape:label="Brushed Metal"
-       inkscape:menu-tooltip="Satiny metal surface effect"
-       inkscape:menu="Non-Realistic 3D Shaders"
-       height="1.5"
-       y="-0.25"
+       x="-0.25"
        width="1.5"
-       x="-0.25">
+       y="-0.25"
+       height="1.5"
+       inkscape:menu="Non-Realistic 3D Shaders"
+       inkscape:menu-tooltip="Satiny metal surface effect"
+       inkscape:label="Brushed Metal"
+       style="color-interpolation-filters:sRGB"
+       id="filter240">
       <feGaussianBlur
-         id="feGaussianBlur222"
+         in="SourceGraphic"
+         stdDeviation="5"
+         result="result8"
+         id="feGaussianBlur222" />
+      <feComposite
+         in2="result8"
+         operator="xor"
+         result="result19"
+         id="feComposite224" />
+      <feComposite
+         k2="1"
+         operator="arithmetic"
+         result="result17"
+         in2="result8"
+         id="feComposite226" />
+      <feOffset
+         result="result18"
+         in="result8"
+         id="feOffset228" />
+      <feDisplacementMap
+         in2="result17"
+         in="result18"
+         xChannelSelector="A"
+         yChannelSelector="A"
+         scale="100"
+         result="result4"
+         id="feDisplacementMap230" />
+      <feComposite
+         in2="result4"
+         result="result2"
+         operator="arithmetic"
+         in="SourceGraphic"
+         k1="0"
+         k3="1"
+         id="feComposite232" />
+      <feComposite
+         in2="SourceGraphic"
+         result="fbSourceGraphic"
+         in="result2"
+         operator="in"
+         id="feComposite234" />
+      <feComposite
+         in2="SourceGraphic"
+         operator="in"
+         result="result15"
+         id="feComposite236" />
+      <feComposite
+         result="result16"
+         in2="SourceGraphic"
+         operator="in"
+         in="result15"
+         id="feComposite238" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB"
+       x="-0.25"
+       width="1.5"
+       y="-0.25"
+       height="1.5"
+       inkscape:menu="Non-Realistic 3D Shaders"
+       inkscape:menu-tooltip="Embossed chrome effect"
+       inkscape:label="Chrome Emboss"
+       id="filter340">
+      <feGaussianBlur
+         in="SourceGraphic"
          result="result8"
          stdDeviation="5"
-         in="SourceGraphic" />
+         id="feGaussianBlur320" />
       <feComposite
-         id="feComposite224"
-         result="result19"
+         result="result18"
          operator="xor"
-         in2="result8" />
-      <feComposite
-         id="feComposite226"
          in2="result8"
-         result="result17"
+         id="feComposite322" />
+      <feComposite
+         in2="result18"
+         result="result16"
          operator="arithmetic"
-         k2="1" />
+         k1="1"
+         k3="0.5"
+         id="feComposite324" />
+      <feComposite
+         in="result16"
+         operator="xor"
+         result="result6"
+         in2="result8"
+         id="feComposite326" />
       <feOffset
-         id="feOffset228"
-         in="result8"
-         result="result18" />
+         in="result6"
+         result="result17"
+         id="feOffset328" />
       <feDisplacementMap
-         id="feDisplacementMap230"
          result="result4"
          scale="100"
          yChannelSelector="A"
          xChannelSelector="A"
-         in="result18"
-         in2="result17" />
-      <feComposite
-         id="feComposite232"
-         k3="1"
-         k1="0"
-         in="SourceGraphic"
-         operator="arithmetic"
-         result="result2"
-         in2="result4" />
-      <feComposite
-         id="feComposite234"
-         operator="in"
-         in="result2"
-         result="fbSourceGraphic"
-         in2="SourceGraphic" />
-      <feComposite
-         id="feComposite236"
-         result="result15"
-         operator="in"
-         in2="SourceGraphic" />
-      <feComposite
-         id="feComposite238"
-         in="result15"
-         operator="in"
-         in2="SourceGraphic"
-         result="result16" />
-    </filter>
-    <filter
-       id="filter340"
-       inkscape:label="Chrome Emboss"
-       inkscape:menu-tooltip="Embossed chrome effect"
-       inkscape:menu="Non-Realistic 3D Shaders"
-       height="1.5"
-       y="-0.25"
-       width="1.5"
-       x="-0.25"
-       style="color-interpolation-filters:sRGB">
-      <feGaussianBlur
-         id="feGaussianBlur320"
-         stdDeviation="5"
-         result="result8"
-         in="SourceGraphic" />
-      <feComposite
-         id="feComposite322"
-         in2="result8"
-         operator="xor"
-         result="result18" />
-      <feComposite
-         id="feComposite324"
-         k3="0.5"
-         k1="1"
-         operator="arithmetic"
-         result="result16"
-         in2="result18" />
-      <feComposite
-         id="feComposite326"
-         in2="result8"
-         result="result6"
-         operator="xor"
-         in="result16" />
-      <feOffset
-         id="feOffset328"
-         result="result17"
-         in="result6" />
-      <feDisplacementMap
-         id="feDisplacementMap330"
-         in2="result16"
          in="result17"
-         xChannelSelector="A"
-         yChannelSelector="A"
-         scale="100"
-         result="result4" />
+         in2="result16"
+         id="feDisplacementMap330" />
       <feComposite
-         id="feComposite332"
-         in2="result4"
-         result="result2"
-         operator="arithmetic"
+         k3="1"
          in="result4"
-         k3="1" />
+         operator="arithmetic"
+         result="result2"
+         in2="result4"
+         id="feComposite332" />
       <feComposite
-         id="feComposite334"
-         in2="result2"
-         result="fbSourceGraphic"
-         in="result6"
-         operator="in" />
-      <feComposite
-         id="feComposite336"
-         in2="fbSourceGraphic"
-         operator="over"
-         result="result14" />
-      <feComposite
-         id="feComposite338"
-         result="result15"
-         in2="result2"
          operator="in"
-         in="result14" />
+         in="result6"
+         result="fbSourceGraphic"
+         in2="result2"
+         id="feComposite334" />
+      <feComposite
+         result="result14"
+         operator="over"
+         in2="fbSourceGraphic"
+         id="feComposite336" />
+      <feComposite
+         in="result14"
+         operator="in"
+         in2="result2"
+         result="result15"
+         id="feComposite338" />
     </filter>
   </defs>
   <sodipodi:namedview
-     inkscape:window-maximized="0"
-     inkscape:window-y="0"
-     inkscape:window-x="0"
-     inkscape:window-height="703"
-     inkscape:window-width="1343"
-     showgrid="false"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
-     inkscape:document-units="mm"
-     inkscape:cy="538.39955"
-     inkscape:cx="2.507815"
-     inkscape:zoom="0.49497475"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="-405.59381"
+     inkscape:cy="538.39955"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="703"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -178,32 +181,32 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     id="layer1">
+    <rect
+       style="fill:#916f6f;stroke:#000000;stroke-width:0.264583"
+       id="rect10"
+       width="79.336891"
+       height="91.473312"
+       x="69.732872"
+       y="97.97303" />
     <rect
        y="97.97303"
        x="69.732872"
        height="91.473312"
        width="79.336891"
-       id="rect10"
-       style="fill:#916f6f;stroke:#000000;stroke-width:0.264583" />
-    <rect
-       style="fill:#483737;stroke:#000000;stroke-width:0.264583;filter:url(#filter240)"
        id="rect192"
-       width="79.336891"
-       height="91.473312"
-       x="69.732872"
-       y="97.97303" />
+       style="fill:#483737;stroke:#000000;stroke-width:0.264583;filter:url(#filter240)" />
     <path
-       transform="matrix(1.2819724,0,0,1.353825,-27.834637,-48.308178)"
-       id="path242"
+       style="fill:#241c1c;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter340)"
        d="m 88.382858,119.57105 -0.332115,37.54747 43.293877,-17.63964 z"
-       style="fill:#241c1c;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter340)" />
+       id="path242"
+       transform="matrix(1.2819724,0,0,1.353825,-28.87781,-44.439556)" />
   </g>
 </svg>
