@@ -10,12 +10,12 @@ pub struct Trending {
     link: ComponentLink<Self>,
     is_loading: bool,
     trending_extractor: Result<YTTrendingExtractor, ParsingError>,
-    page_num:u32
+    page_num: u32,
 }
 
 pub enum Msg {
     Loaded(Result<YTTrendingExtractor, ParsingError>),
-    LoadMore
+    LoadMore,
 }
 
 impl Component for Trending {
@@ -32,7 +32,7 @@ impl Component for Trending {
             link,
             is_loading: true,
             trending_extractor: Err(ParsingError::from("still loading")),
-            page_num:1
+            page_num: 1,
         }
     }
 
@@ -48,7 +48,7 @@ impl Component for Trending {
                 true
             }
             Msg::LoadMore => {
-                self.page_num+=1;
+                self.page_num += 1;
                 true
             }
         }
@@ -64,7 +64,7 @@ impl Component for Trending {
                 Ok(extractor) => match extractor.get_videos() {
                     Ok(extractor) => {
                         let mut results = vec![];
-                        for vid in extractor.iter().take((self.page_num*20) as usize) {
+                        for vid in extractor.iter().take((self.page_num * 20) as usize) {
                             results.push(YTSearchItem::StreamInfoItem(vid.clone()));
                         }
                         let items = layout_result(320_f64, &results);

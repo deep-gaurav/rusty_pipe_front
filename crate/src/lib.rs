@@ -7,6 +7,7 @@ extern crate anyhow;
 extern crate async_trait;
 extern crate base64;
 extern crate http;
+extern crate human_format;
 extern crate log;
 extern crate reqwest;
 extern crate rusty_pipe;
@@ -18,17 +19,16 @@ extern crate wasm_logger;
 extern crate web_sys;
 extern crate yew;
 extern crate yew_router;
-extern crate human_format;
 
 use wasm_bindgen::prelude::*;
 
 mod app;
 use app::App;
 mod downloader;
+mod route_comp;
 mod search_result;
 mod trending;
 mod video;
-mod route_comp;
 mod video_player;
 
 cfg_if! {

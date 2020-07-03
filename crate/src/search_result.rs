@@ -3,8 +3,8 @@ use rusty_pipe::youtube_extractor::search_extractor::YTSearchExtractor;
 use rusty_pipe::youtube_extractor::search_extractor::YTSearchItem;
 use yew::prelude::*;
 
-use yew::{Component, ComponentLink, Html};
 use super::route_comp::RouteComponent;
+use yew::{Component, ComponentLink, Html};
 
 pub struct SearchResult {
     link: ComponentLink<Self>,
@@ -27,8 +27,7 @@ pub enum Msg {
 }
 
 pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
-
-    use super::app::{AppRoute,go_to_route};
+    use super::app::{go_to_route, AppRoute};
     {
         let window_width = yew::utils::window()
             .inner_width()
@@ -36,16 +35,16 @@ pub fn layout_result(cardwidth: f64, results: &Vec<YTSearchItem>) -> Vec<Html> {
             .as_f64()
             .expect("window width not number");
 
-        log::info!("window_width: {}",window_width);
+        log::info!("window_width: {}", window_width);
         let cardscolumn = {
             let t = ((window_width / cardwidth).floor() as usize);
-            if t==0{
+            if t == 0 {
                 1
-            }else{
+            } else {
                 t
             }
         };
-        log::info!("cards_column: {}",cardscolumn);
+        log::info!("cards_column: {}", cardscolumn);
 
         let mut rows = vec![];
 

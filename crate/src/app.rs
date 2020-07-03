@@ -37,10 +37,10 @@ pub enum AppRoute {
     Home,
 }
 
-pub fn go_to_route(route:Route){
-  use yew_router::agent::{RouteAgentDispatcher, RouteRequest};
-  let mut dispatcher = RouteAgentDispatcher::<()>::new();
-  dispatcher.send(RouteRequest::ChangeRoute(route));
+pub fn go_to_route(route: Route) {
+    use yew_router::agent::{RouteAgentDispatcher, RouteRequest};
+    let mut dispatcher = RouteAgentDispatcher::<()>::new();
+    dispatcher.send(RouteRequest::ChangeRoute(route));
 }
 
 impl Component for App {
@@ -138,8 +138,13 @@ impl Component for App {
             }
 
             Msg::Back => {
-              yew::utils::window().history().expect("History not found").back();
-              false
+                if let Err(e)=yew::utils::window()
+                .history()
+                .expect("History not found")
+                .back(){
+                  log::warn!("{:#?}",e);
+                }
+                false
             }
             Msg::Ignore => false,
         }

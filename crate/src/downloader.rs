@@ -3,12 +3,12 @@ use rusty_pipe::downloader_trait::Downloader;
 use rusty_pipe::youtube_extractor::error::ParsingError;
 use std::collections::HashMap;
 use std::future::Future;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, RequestMode, Response, Window};
 use yew::{Component, ComponentLink};
-use wasm_bindgen::prelude::{*};
 // use http::Response;
 
 pub fn send_future<COMP: Component, F>(link: ComponentLink<COMP>, future: F)
@@ -23,32 +23,31 @@ where
 #[wasm_bindgen]
 extern "C" {
 
-    pub fn encodeURIComponent(uri:&str)->String;
+    pub fn encodeURIComponent(uri: &str) -> String;
 
-    fn eval(code:&str)->String;
+    fn eval(code: &str) -> String;
 
 }
 
-pub fn is_local()->bool{
+pub fn is_local() -> bool {
     let href = eval("window.location.href");
     href.starts_with("file")
 }
-
 
 pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String, ParsingError> {
     let mut opts = RequestInit::new();
     opts.method("GET");
     opts.mode(RequestMode::Cors);
 
-    let urlencoded = encodeURIComponent(& base64::encode(url));
+    let urlencoded = encodeURIComponent(&base64::encode(url));
     let url = {
-        if is_local(){
+        if is_local() {
             url.to_string()
-        }else{
+        } else {
             (format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded))
         }
     };
-    
+
     let request = Request::new_with_str_and_init(&url, &opts)
         .map_err(|e| ParsingError::from(format!("{:#?}", e)))?;
 
@@ -128,7 +127,7 @@ impl Downloader for DownloaderExample {
 
     fn eval_js(_script: &str) -> Result<String, String> {
         // println!("js result : {:?}", result);
-        log::info!("js eval {}",_script);
+        log::info!("js eval {}", _script);
         let result = eval(_script);
         log::info!("JS result: {}", result);
         Ok(result)
