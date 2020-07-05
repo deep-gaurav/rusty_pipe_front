@@ -43,7 +43,7 @@ impl Component for RouteComponent {
         html! {
             <div onclick=self.link.callback(|_|Msg::Clicked)>
             {
-                self.props.children.render()
+                for self.props.children.iter()
             }
             </div>
         }

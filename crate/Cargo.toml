@@ -22,8 +22,8 @@ wee_alloc = { version = "0.4" }
 serde_derive = "1.0"
 dotenv = "0.15"
 failure = "0.1"
-yew = { version="0.16", features = ["toml", "yaml", "msgpack", "cbor", "web_sys"]}
-yew-router = { version = "0.13", features = ["web_sys"]}
+yew = { version="0.17", features = ["toml", "yaml", "msgpack", "cbor", "web_sys"]}
+yew-router = { version = "0.14", features = ["web_sys"]}
 web-sys = { version= "0.3", features=["HtmlInputElement","WebSocket","HtmlSelectElement","DomRect","Node", "Element", "Window","History", "CssStyleDeclaration","HtmlVideoElement","HtmlMediaElement"]}
 log = "0.4.6"
 wasm-logger = "0.2.0"
