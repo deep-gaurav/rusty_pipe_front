@@ -67,6 +67,8 @@ class BulPlayer extends HTMLElement {
     posterurl: string;
     timedisp: HTMLElement;
     pipbutton: HTMLElement;
+    repeatoff: HTMLElement;
+    repeaton: HTMLElement;
 
     holdingcontainer: HTMLElement;
 
@@ -231,8 +233,28 @@ class BulPlayer extends HTMLElement {
         this.pipbutton.style.bottom = "1.2em";
         this.pipbutton.style.right = "0";
 
+        this.repeatoff = htmlToElement(`<div class="icon"><svg style="width:24px;height:24px" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M2,5.27L3.28,4L20,20.72L18.73,22L15.73,19H7V22L3,18L7,14V17H13.73L7,10.27V11H5V8.27L2,5.27M17,13H19V17.18L17,15.18V13M17,5V2L21,6L17,10V7H8.82L6.82,5H17Z" />
+    </svg> </div>`) as HTMLElement;
+        this.repeaton = htmlToElement(`<div class="icon"><svg style="width:24px;height:24px" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M13,15V9H12L10,10V11H11.5V15M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z" />
+    </svg> </div>`) as HTMLElement;
+
+        this.repeatoff.style.position = "absolute";
+        this.repeatoff.style.bottom = "1.2em";
+        this.repeatoff.style.right = "70px";
+
+        this.repeaton.style.position = "absolute";
+        this.repeaton.style.bottom = "1.2em";
+        this.repeaton.style.right = "70px";
+
+        this.repeaton.classList.add("is-hidden")
+
+
         progressbase.appendChild(this.pipbutton);
         progressbase.appendChild(this.timedisp)
+        progressbase.appendChild(this.repeatoff)
+        progressbase.appendChild(this.repeaton)
 
         this.settingpanel = htmlToElement(
             ` <div id="settingpanel" class="is-hidden has-text-light"
@@ -318,8 +340,20 @@ class BulPlayer extends HTMLElement {
             })
         });
 
-        observer.observe(this.holdingcontainer
-        );
+        observer.observe(this.holdingcontainer);
+
+        let repeat = false;
+
+        this.repeatoff.onclick = (ev) => {
+            repeat=true;
+            this.repeaton.classList.remove("is-hidden")
+            this.repeatoff.classList.add("is-hidden")
+        }
+        this.repeaton.onclick = ev => {
+            repeat=false;
+            this.repeatoff.classList.remove("is-hidden")
+            this.repeaton.classList.add("is-hidden")
+        }
 
         let vidsources: Array<videosource> = data.videoOnlyStreams;
         let audiosources: Array<audiosource> = data.audioOnlyStreams;
@@ -587,6 +621,18 @@ class BulPlayer extends HTMLElement {
 
         vidtag.onplay = () => changestate(videostates.play)
 
+        audtag.onended = () => {
+            if(repeat){
+                audtag.currentTime=0;
+                vidtag.currentTime=0;
+                if(audioMode){
+                    audtag.play()
+                }else{
+                    vidtag.play()
+                }
+            }
+        }
+
         vidtag.onpause = () => changestate(videostates.pause)
 
         vidtag.onloadstart = () => changestate(videostates.loading)
@@ -677,11 +723,11 @@ class BulPlayer extends HTMLElement {
             for (let video of vidsources) {
                 let canplay = vidtag.canPlayType(video.mimeType);
                 if (canplay == "probably") {
-                    if(!tryalternate){
-                    
+                    if (!tryalternate) {
+
                         vidtag.src = video.url;
                         audtag.src = audiosources[0].url;
-                    }else{
+                    } else {
                         vidtag.src = `http://rustypipe.herokuapp.com/vid/${videoid}/${video.itag}`;
                         audtag.src = `http://rustypipe.herokuapp.com/vid/${videoid}/${audiosources[0].itag}`
                     }
@@ -690,23 +736,23 @@ class BulPlayer extends HTMLElement {
                     // vidtag.currentTime=oldtime;
                     console.log("playing: ", video);
 
-                    if(!tryalternate){
+                    if (!tryalternate) {
                         previewvid.src = vidsources.sort((a, b) => parseInt(a.contentLength) - parseInt(b.contentLength))[0].url;
                     }
-                    else{
+                    else {
                         previewvid.src = `http://rustypipe.herokuapp.com/vid/${videoid}/${vidsources.sort((a, b) => parseInt(a.contentLength) - parseInt(b.contentLength))[0].itag}`;
                     }
                     previewvid.load()
-                    
+
                     break;
                 }
             }
         }
 
-        vidtag.onerror = (ev)=>{
-            console.warn("vid error",ev)
-            if(!tryalternate){
-                tryalternate=true
+        vidtag.onerror = (ev) => {
+            console.warn("vid error", ev)
+            if (!tryalternate) {
+                tryalternate = true
                 playprefquality();
             }
         }
@@ -733,7 +779,7 @@ class BulPlayer extends HTMLElement {
                 this.vidtag.poster = this.posterurl;
             }
         } else if (name == "id") {
-            this.videoId=newValue;
+            this.videoId = newValue;
             if (newValue != oldValue) {
                 this.exec(this.data);
             }
