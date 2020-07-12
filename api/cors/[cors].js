@@ -19,6 +19,7 @@ const allowCors = fn => async (req, res) => {
 function request(uri,options,res){
   const https = require('https');
   const url = require("url");
+  
 
   console.log("Request headers");
   console.log(options);
@@ -68,26 +69,20 @@ const handler = (req, res) => {
     } = req;
     var uri = Buffer.from(decodeURIComponent(cors), 'base64').toString('ascii');
 
-    const httpproxy = require("http-proxy")
-  
-    var proxy = httpproxy.createProxyServer({});
-
-    proxy.web(req,res,{target:uri});
-
-    // var header = {};
-    // var cphead = ["x-youtube-client-name","x-youtube-client-version","range"];
-    // for(head of cphead){
-    //   if(req.headers[head]){
-    //     header[head]=req.headers[head]
-    //   }
-    // }
-    // if(header["range"]){
-    //   if(header["range"].endsWith("-")){
-    //     var r = header["range"];
-    //     r = r+ (parseInt(r.split("=")[1].split("-")[0])+1000000).toString();
-    //     header["range"]=r;
-    //   }
-    // }
+    var header = {};
+    var cphead = ["x-youtube-client-name","x-youtube-client-version","range"];
+    for(head of cphead){
+      if(req.headers[head]){
+        header[head]=req.headers[head]
+      }
+    }
+    if(header["range"]){
+      if(header["range"].endsWith("-")){
+        var r = header["range"];
+        r = r+ (parseInt(r.split("=")[1].split("-")[0])+1000000).toString();
+        header["range"]=r;
+      }
+    }
     // if(req.headers["x-youtube-client-name"]){
     //     header["x-youtube-client-name"]=req.headers["x-youtube-client-name"];
     // }
@@ -98,14 +93,14 @@ const handler = (req, res) => {
     //   header["range"]=req.headers["range"];
     // }
 
-    // const https = require('https');
-    // var options = {
-    //     headers : header
-    // }
+    const https = require('https');
+    var options = {
+        headers : header
+    }
 
-    // console.log(options);
+    console.log(options);
 
-    // request(uri,options,res);
+    request(uri,options,res);
 
     // https.get(uri, options, (resp) => {
     //   let data = '';
