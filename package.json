@@ -31,5 +31,8 @@
       "./crate/assets"
     ],
     "watcherGlob": false
+  },
+  "dependencies": {
+    "http-proxy": "^1.18.1"
   }
 }
