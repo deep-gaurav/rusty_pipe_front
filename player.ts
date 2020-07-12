@@ -5,6 +5,7 @@ interface videosource {
     url: string,
     quality: string,
     mimeType: string,
+    itag: number,
     bitrate: number,
     height: number,
     contentLength: string
@@ -14,6 +15,7 @@ interface audiosource {
     url: string,
     bitrate: number,
     quality: string,
+    itag: number,
     mimeType: string,
     contentLength: string
 }
@@ -70,6 +72,8 @@ class BulPlayer extends HTMLElement {
 
 
     data: any;
+
+    videoId: string;
 
     constructor() {
         super();
@@ -286,6 +290,9 @@ class BulPlayer extends HTMLElement {
         }
         if (!this.posterurl) {
             this.posterurl = this.getAttribute("poster")
+        }
+        if (!this.videoId) {
+            this.videoId = this.getAttribute("id");
         }
 
         let observer = new IntersectionObserver((entry, observer) => {
@@ -662,28 +669,48 @@ class BulPlayer extends HTMLElement {
                 }
             });
         }
-
+        let videoid = this.videoId;
+        let tryalternate = false;
         function playprefquality() {
             vidsources.sort((a, b) => (Math.abs(a.height - prefquality) - Math.abs(b.height - prefquality)) || parseInt(a.contentLength) - parseInt(b.contentLength))
             seekbacktime = vidtag.currentTime;
             for (let video of vidsources) {
                 let canplay = vidtag.canPlayType(video.mimeType);
                 if (canplay == "probably") {
-                    vidtag.src = video.url;
-                    audtag.src = audiosources[0].url;
+                    if(!tryalternate){
+                    
+                        vidtag.src = video.url;
+                        audtag.src = audiosources[0].url;
+                    }else{
+                        vidtag.src = `http://rustypipe.herokuapp.com/vid/${videoid}/${video.itag}`;
+                        audtag.src = `http://rustypipe.herokuapp.com/vid/${videoid}/${audiosources[0].itag}`
+                    }
                     audtag.load()
                     vidtag.load()
                     // vidtag.currentTime=oldtime;
                     console.log("playing: ", video);
 
-                    previewvid.src = vidsources.sort((a, b) => parseInt(a.contentLength) - parseInt(b.contentLength))[0].url;
+                    if(!tryalternate){
+                        previewvid.src = vidsources.sort((a, b) => parseInt(a.contentLength) - parseInt(b.contentLength))[0].url;
+                    }
+                    else{
+                        previewvid.src = `http://rustypipe.herokuapp.com/vid/${videoid}/${vidsources.sort((a, b) => parseInt(a.contentLength) - parseInt(b.contentLength))[0].itag}`;
+                    }
                     previewvid.load()
-
-
+                    
                     break;
                 }
             }
         }
+
+        vidtag.onerror = (ev)=>{
+            console.warn("vid error",ev)
+            if(!tryalternate){
+                tryalternate=true
+                playprefquality();
+            }
+        }
+
         playprefquality()
 
 
@@ -706,6 +733,7 @@ class BulPlayer extends HTMLElement {
                 this.vidtag.poster = this.posterurl;
             }
         } else if (name == "id") {
+            this.videoId=newValue;
             if (newValue != oldValue) {
                 this.exec(this.data);
             }
