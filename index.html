@@ -210,6 +210,7 @@
     </div>
   </div>
   <script src="app/index.ts"></script>
+  <script src="historyevent.js"></script>
 
   <!-- Matomo -->
   <script type="text/javascript" id="matomo">
@@ -225,8 +226,8 @@
       g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
     })();
 
-    window.addEventListener('hashchange', function() {
-        _paq.push(['setCustomUrl', '/' + window.location.hash.substr(1)]);
+    window.addEventListener('locationchange', function() {
+        _paq.push(['setCustomUrl', '/' + window.location.pathname]);
         _paq.push(['setDocumentTitle', 'My New Title']);
         _paq.push(['setGenerationTimeMs', 0]);
         _paq.push(['trackPageView']);
