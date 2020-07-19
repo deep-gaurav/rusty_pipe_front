@@ -199,13 +199,15 @@
 </head>
 
 <body>
-  <div class="loaderbg has-background-primary">
-    <div class="spinner">
-      <div class="sk-folding-cube">
-        <div class="sk-cube1 sk-cube"></div>
-        <div class="sk-cube2 sk-cube"></div>
-        <div class="sk-cube4 sk-cube"></div>
-        <div class="sk-cube3 sk-cube"></div>
+  <div id="approot">
+    <div class="loaderbg has-background-primary">
+      <div class="spinner">
+        <div class="sk-folding-cube">
+          <div class="sk-cube1 sk-cube"></div>
+          <div class="sk-cube2 sk-cube"></div>
+          <div class="sk-cube4 sk-cube"></div>
+          <div class="sk-cube3 sk-cube"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -228,11 +230,10 @@
 
     window.addEventListener('locationchange', function() {
         _paq.push(['setCustomUrl', '/' + window.location.pathname]);
-        _paq.push(['setDocumentTitle', 'My New Title']);
-        _paq.push(['setGenerationTimeMs', 0]);
+        _paq.push(['setDocumentTitle', window.document.title]);
+        _paq.push(['setGenerationTimeMs', 3000]);
         _paq.push(['trackPageView']);
     });
-
   </script>
   <!-- End Matomo Code -->
 

@@ -66,4 +66,10 @@ pub fn run() {
     wasm_logger::init(wasm_logger::Config::default());
 
     yew::start_app::<App>();
+    let el = yew::utils::document()
+    .query_selector("#approot")
+    .expect("can't get body node for rendering")
+    .expect("can't unwrap body node");
+    yew::App::<App>::new().mount(el);
+    yew::run_loop();
 }
