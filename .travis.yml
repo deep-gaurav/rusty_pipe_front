@@ -41,7 +41,9 @@ matrix:
     install:
       - *INSTALL_NODE_VIA_NVM
       - npm install -g cordova
-      - cargo install wasm-pack
+      - curl -L https://github.com/rustwasm/wasm-pack/releases/download/v0.9.1/wasm-pack-v0.9.1-x86_64-unknown-linux-musl.tar.gz --output wasm-pack.tar.gz
+      - tar -zxvf wasm-pack.tar.gz
+      - export PATH="$PATH:$PWD/wasm-pack"
       - npm install
     script:
     - npm run build
