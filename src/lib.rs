@@ -73,3 +73,14 @@ pub fn run() {
     yew::App::<App>::new().mount(el);
     yew::run_loop();
 }
+
+#[wasm_bindgen]
+pub fn run_app() -> Result<(), JsValue> {
+    wasm_logger::init(wasm_logger::Config::default());
+    let el = yew::utils::document()
+    .query_selector("#approot")?.expect("Cant unwrap body");
+    yew::App::<App>::new().mount(el);
+    yew::run_loop();
+
+    Ok(())
+}
