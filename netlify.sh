@@ -17,7 +17,9 @@ set -e
    curl https://sh.rustup.rs -sSf | sh -s - --default-toolchain stable -y
    source ~/.cargo/env
 
-   cargo install wasm-pack
+   ls -l
+   tar -zxvf wasm-pack-v0.9.1-x86_64-unknown-linux-musl.tar.gz
+   export PATH="$PATH:$PWD/wasm-pack-v0.9.1-x86_64-unknown-linux-musl"
 
    npm run build
 
