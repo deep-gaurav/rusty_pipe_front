@@ -24,7 +24,7 @@ set -e
 
    npm run build
 
-   rm dist/*.map
+   rm -f dist/*.map || true
 
    ls -l dist/
 
