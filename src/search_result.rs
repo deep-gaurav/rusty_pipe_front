@@ -239,7 +239,7 @@ impl Component for SearchResult {
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let query = props.query.clone();
         let future = async move {
-            let ytex = YTSearchExtractor::new(DownloaderExample, &query, None).await;
+            let ytex = YTSearchExtractor::new::<DownloaderExample>( &query, None).await;
             let ytex = ytex.ok();
             if let Some(ytex) = ytex {
                 Msg::Loaded(ytex)
@@ -282,8 +282,7 @@ impl Component for SearchResult {
                                 let query = self.props.query.clone();
                                 use super::downloader::{send_future, DownloaderExample};
                                 let future = async move {
-                                    let ytex = YTSearchExtractor::new(
-                                        DownloaderExample,
+                                    let ytex = YTSearchExtractor::new::<DownloaderExample>(
                                         &query,
                                         Some(url),
                                     )
@@ -321,7 +320,7 @@ impl Component for SearchResult {
 
             let query = _props.query.clone();
             let future = async move {
-                let ytex = YTSearchExtractor::new(DownloaderExample, &query, None).await;
+                let ytex = YTSearchExtractor::new::<DownloaderExample>( &query, None).await;
                 let ytex = ytex.ok();
                 if let Some(ytex) = ytex {
                     Msg::Loaded(ytex)

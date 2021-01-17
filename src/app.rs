@@ -86,7 +86,7 @@ impl Component for App {
                 let future = async move {
                     let change = ch2.clone();
                     let ytex =
-                        YTSearchExtractor::get_search_suggestion(&change, &DownloaderExample).await;
+                        YTSearchExtractor::get_search_suggestion::<DownloaderExample>(&change).await;
                     match ytex {
                         Ok(suggestion) => Msg::ShowSearch(change, suggestion),
                         Err(err) => {
@@ -110,7 +110,7 @@ impl Component for App {
                 let future = async move {
                     let change = ch2.clone();
                     let ytex =
-                        YTSearchExtractor::get_search_suggestion(&change, &DownloaderExample).await;
+                        YTSearchExtractor::get_search_suggestion::<DownloaderExample>(&change).await;
                     match ytex {
                         Ok(suggestion) => Msg::ShowSearch(change, suggestion),
                         Err(err) => {
