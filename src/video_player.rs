@@ -105,11 +105,13 @@ impl Component for VideoPlayer {
 
         let thumburl = thumbs.first().map(|t| t.url.as_str()).unwrap_or_default();
 
-        let video_streams = self
+        let mut video_streams = self
             .props
             .extractor
             .get_video_only_stream()
             .unwrap_or_default();
+
+        video_streams.append(&mut self.props.extractor.get_video_stream().unwrap_or_default());
         let audio_streams = self.props.extractor.get_audio_streams().unwrap_or_default();
         let source = Source {
             videoOnlyStreams: video_streams,
