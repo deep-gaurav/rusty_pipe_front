@@ -44,7 +44,7 @@ pub async fn fetch(url: &str, headers: HashMap<String, String>) -> Result<String
         if is_local() {
             url.to_string()
         } else {
-            (format!("https://rustypipe.deepraven.co/api/cors/{}", urlencoded))
+            (format!("https://rustypipe.deepraven.xyz/api/cors/{}", urlencoded))
         }
     };
 
