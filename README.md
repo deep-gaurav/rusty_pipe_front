@@ -1,7 +1,7 @@
 <p align="center"><a href="https://deep-gaurav,github.io"><img src="icon.png" width="150"></a></p> 
 <h2 align="center"><b>Rusty Pipe</b></h2>
 <h4 align="center">An alternate youtube frontend</h4>
-<p align="center"><a href="https://rustypipe.deepraven.co/">rustypipe.deepraven.co</a></p> 
+<p align="center"><a href="https://rustypipe.deepraven.xyz">rustypipe.deepraven.xyz</a></p> 
 
 <p align="center">
 <a href="https://github.com/deep-gaurav/rusty_pipe_front/releases/latest" alt="GitHub release"><img src="https://img.shields.io/github/release/deep-gaurav/rusty_pipe_front.svg" ></a>
